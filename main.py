@@ -1,8 +1,16 @@
-import pygame
 import os
+import pygame
+import tkinter as tk
 
-pygame.init()
-screen = pygame.display.set_mode((300, 200))
+# Adapt to the monitor size
+rootSystem = tk.Tk()
+
+screenWith = rootSystem.winfo_screenwidth()
+screenHeight = rootSystem.winfo_screenheight()
+
+#Start Pygame
+pygame.display.init()
+screen = pygame.display.set_mode((screenWith, screenHeight), pygame.FULLSCREEN)
 
 wait = True
 
