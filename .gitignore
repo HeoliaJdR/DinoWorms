@@ -1,1 +1,3 @@
 .idea
+venv/
+Class/__pycache__/ball.cpython-37.pyc
