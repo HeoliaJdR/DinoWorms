@@ -1,7 +1,8 @@
 import pygame
-import tkinter as tk
 from pygame.locals import *
-
+import constants
+import tkinter as tk
+from Class import characters
 from Class import world
 
 # Adapt to the monitor size
@@ -18,6 +19,17 @@ screen = pygame.display.set_mode((screenWith, screenHeight), pygame.FULLSCREEN)
 newWorld = world.World(screenHeight, screenWith)
 newWorld.initBackground()
 newWorld.printBackground(screen)
+=======
+"""
+
+#Start Pygame
+pygame.display.init()
+screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT), pygame.FULLSCREEN)
+
+characters.displayDinosaurs(screen)
+
+>>>>>>> [+] Characters + Sprite (Not Working Yet)
+"""
 pygame.display.flip()
 
 wait = True
