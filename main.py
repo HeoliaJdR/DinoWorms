@@ -18,6 +18,7 @@ screen = pygame.display.set_mode((screenWith, screenHeight), pygame.FULLSCREEN)
 newWorld = world.World(screenHeight, screenWith)
 newWorld.initBackground()
 newWorld.printBackground(screen)
+pygame.display.flip()
 
 wait = True
 
