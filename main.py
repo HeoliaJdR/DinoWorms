@@ -19,7 +19,6 @@ screen = pygame.display.set_mode((screenWith, screenHeight), pygame.FULLSCREEN)
 newWorld = world.World(screenHeight, screenWith)
 newWorld.initBackground()
 newWorld.printBackground(screen)
-=======
 """
 
 #Start Pygame
@@ -43,5 +42,6 @@ while wait:
             newWorld.destroyArea(event.pos[0], event.pos[1])
             newWorld.printBackground(screen)
             pygame.display.flip()
+
 
 pygame.quit()

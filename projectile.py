@@ -10,7 +10,7 @@ pygame.display.set_caption('Projectile Motion')
 
 def redrawWindow():
     win.fill((64, 64, 64))
-    if shoot == 0:
+    if not shoot:
         golfBall.x = 10
         golfBall.y = 494
     golfBall.draw(win)
@@ -57,20 +57,23 @@ while run:
             golfBall.x = po[0]
             golfBall.y = po[1]
         else:
-            shoot = False
+            """shoot = False
             power = 0
             time = 0
-            golfBall.y = 494
-            """x = golfBall.x
-            y = golfBall.y
-            time += 0.01
+            golfBall.y = 494"""
+            x = golfBall.x
+            y = golfBall.y-1
+            angle = angle*0.9
+            power = power * 0.8
+            time = 0
             po = ball.ball.ballPath(x, y, power, angle, time)
             golfBall.x = po[0]
-            golfBall.y = po[1]"""
+            golfBall.y = po[1]
+
             #pos = pygame.mouse.get_pos()
             #shoot = True
             #angle = findAngle(pos)
-        if power < 0.01:
+        if po[2] < 0.1 and po[3] < 0.1:
             shoot = False
             power = 0
             time = 0

@@ -14,7 +14,7 @@ class ball(object):
 
     @staticmethod
     def ballPath(startx, starty, power, ang, time):
-        print(power)
+        #print(power)
         angle = ang
         velx = math.cos(angle) * power
         vely = math.sin(angle) * power
@@ -25,4 +25,8 @@ class ball(object):
         newx = round(distX + startx)
         newy = round(starty - distY)
 
-        return (newx, newy)
+        print(newx)
+        print(newy)
+        print(angle)
+        print(velx)
+        return (newx, newy, velx*time, vely)

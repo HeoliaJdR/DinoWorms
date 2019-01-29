@@ -62,3 +62,6 @@ Imgs/png/Dead (1).png
 Imgs/Dino_Sprites.png
 Class/__pycache__/sprites.cpython-37.pyc
 Class/__pycache__/characters.cpython-37.pyc
+__pycache__/projectile.cpython-37.pyc
+Class/__pycache__/world.cpython-37.pyc
+Class/__pycache__/__init__.cpython-37.pyc
