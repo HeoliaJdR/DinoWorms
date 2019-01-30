@@ -4,6 +4,7 @@ import constants
 import tkinter as tk
 from Class import characters
 from Class import world
+from Class import projectile
 
 # Adapt to the monitor size
 rootSystem = tk.Tk()
@@ -20,7 +21,10 @@ screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.
 newWorld = world.World(screenHeight - 200, screenWith - 200)
 newWorld.initBackground()
 newWorld.printBackground(screen)
-array = newWorld.getPixels()
+
+#init projectile(test)
+proj = projectile.projectile()
+proj.initProjectile()
 
 """
 #Start Pygame
@@ -38,6 +42,11 @@ mouseIsDown = False
 isFullScreen = False
 
 while wait:
+    newWorld.printBackground(screen)
+    proj.launchBall(screen,newWorld.getPixels())
+    pygame.display.update()
+
+
     for event in pygame.event.get():
         if (event.type == pygame.KEYDOWN):
             if event.key == pygame.K_ESCAPE:
@@ -62,15 +71,7 @@ while wait:
         if event.type == pygame.QUIT:
             wait = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouseIsDown = True
-        if event.type == pygame.MOUSEBUTTONUP:
-            mouseIsDown = False
-
-        if event.type == pygame.MOUSEMOTION and mouseIsDown:
-            newWorld.destroyLine(event.pos[0], event.pos[1], constants.DRILL)
-            newWorld.printBackground(screen)
-
+    #pygame.time.delay(50)
     pygame.display.update()
 
 pygame.quit()
