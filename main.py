@@ -12,15 +12,17 @@ screenWith = rootSystem.winfo_screenwidth()
 screenHeight = rootSystem.winfo_screenheight()
 
 #Start Pygame
+pygame.init()
 pygame.display.init()
-screen = pygame.display.set_mode((screenWith, screenHeight), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.RESIZABLE)
 
 #Start World
-newWorld = world.World(screenHeight, screenWith)
+newWorld = world.World(screenHeight - 200, screenWith - 200)
 newWorld.initBackground()
 newWorld.printBackground(screen)
-"""
+array = newWorld.getPixels()
 
+"""
 #Start Pygame
 pygame.display.init()
 screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT), pygame.FULLSCREEN)
@@ -32,16 +34,43 @@ characters.displayDinosaurs(screen)
 pygame.display.flip()
 
 wait = True
+mouseIsDown = False
+isFullScreen = False
 
 while wait:
     for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN and event.key == K_f:
+        if (event.type == pygame.KEYDOWN):
+            if event.key == pygame.K_ESCAPE:
+                 wait = False
+            if event.key == pygame.K_f:
+                if isFullScreen:
+                    isFullScreen = False
+                    tempScreen = pygame.transform.scale(screen.convert(), (screenWith - 200, screenHeight - 200))
+                    pygame.display.quit()
+                    pygame.display.init()
+                    screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.RESIZABLE)
+                    screen.blit(tempScreen, (0, 0))
+                else:
+                    isFullScreen = True
+                    tempScreen = pygame.transform.scale(screen.convert(), (screenWith, screenHeight))
+                    pygame.display.quit()
+                    pygame.display.init()
+                    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+                    screen.blit(tempScreen, (0, 0))
+                pygame.display.flip()
+
+        if event.type == pygame.QUIT:
             wait = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            newWorld.destroyArea(event.pos[0], event.pos[1])
-            newWorld.printBackground(screen)
-            pygame.display.flip()
+            mouseIsDown = True
+        if event.type == pygame.MOUSEBUTTONUP:
+            mouseIsDown = False
 
+        if event.type == pygame.MOUSEMOTION and mouseIsDown:
+            newWorld.destroyLine(event.pos[0], event.pos[1], constants.DRILL)
+            newWorld.printBackground(screen)
+
+    pygame.display.update()
 
 pygame.quit()

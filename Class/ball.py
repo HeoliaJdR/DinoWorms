@@ -25,8 +25,4 @@ class ball(object):
         newx = round(distX + startx)
         newy = round(starty - distY)
 
-        print(newx)
-        print(newy)
-        print(angle)
-        print(velx)
-        return (newx, newy, velx*time, vely)
+        return (int(newx), int(newy), velx*time, vely)

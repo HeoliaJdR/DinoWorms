@@ -100,6 +100,5 @@ while run:
                 pos = pygame.mouse.get_pos()
                 shoot = True
                 angle = findAngle(pos)
-                print(angle)
                 loading = 0
 pygame.quit()
