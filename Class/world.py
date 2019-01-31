@@ -61,5 +61,7 @@ class World:
         random.seed()
         xWind = random.randint(-10, 10)
         yWind = random.randint(-5, 5)
+        self.wind = (xWind, yWind)
 
-        return (xWind, yWind)
+     def getWind(self):
+         return self.wind
