@@ -5,6 +5,7 @@ import tkinter as tk
 from Class import characters
 from Class import world
 from Class import projectile
+from Class import sprites
 
 # Adapt to the monitor size
 rootSystem = tk.Tk()
@@ -26,6 +27,10 @@ newWorld.printBackground(screen)
 proj = projectile.projectile()
 proj.initProjectile()
 
+player = characters.Characters(100)
+player.initCharacter()
+
+
 """
 #Start Pygame
 pygame.display.init()
@@ -44,11 +49,10 @@ changeWind = True
 
 while wait:
     newWorld.printBackground(screen)
-    
+    player.displayCharacter(screen)
     if(changeWind):
         newWorld.generateWind()
         changeWind = False
-
     proj.launchBall(screen,newWorld.getPixels())
     pygame.display.update()
 
