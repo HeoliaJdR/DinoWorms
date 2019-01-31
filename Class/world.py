@@ -1,5 +1,7 @@
 import pygame
 import random
+import math
+import constants
 from pygame import gfxdraw
 
 class World:
@@ -7,6 +9,7 @@ class World:
         self.backgroundSkyImgPath = "Imgs/backgroundSky.jpg"
         self.backgroundGroundImgPath = "Imgs/bg_ship.png"
         self.backgroundMaskImgPath = "Imgs/bg_ship.jpg"
+        self.arrowWindPath = "Imgs/windArrow.png"
         self.screenH = screenHeight
         self.screenW = screenWidth
         self.pixels = [[1] * screenHeight for i in range(screenWidth)]
@@ -41,11 +44,13 @@ class World:
     def initBackground(self):
         self.backgroundSky = pygame.transform.scale(pygame.image.load(self.backgroundSkyImgPath).convert(), (self.screenW, self.screenH))
         self.backgroundGround = pygame.transform.scale(pygame.image.load(self.backgroundGroundImgPath).convert_alpha(), (self.screenW, self.screenH))
+        self.backgroundArrow = pygame.image.load(self.arrowWindPath).convert_alpha()
         self.generatePixel()
 
     def printBackground(self, screen):
         screen.blit(self.backgroundSky, (0, 0))
         screen.blit(self.backgroundGround, (0, 0))
+        screen.blit(self.backgroundArrow, (self.screenW - 100, 0))
 
     def destroyCircleArea(self, xSrc, ySrc, constArea):
         pygame.draw.circle(self.backgroundGround, (0, 0, 0, 0), (xSrc, ySrc), constArea)
@@ -63,5 +68,14 @@ class World:
         yWind = random.randint(-5, 5)
         self.wind = (xWind, yWind)
 
-     def getWind(self):
-         return self.wind
+        self.setWindArrowAngle()
+
+    def getWind(self):
+        return self.wind
+
+    def setWindArrowAngle(self):
+        self.backgroundArrow = pygame.transform.scale(pygame.image.load(self.arrowWindPath).convert_alpha(), (constants.WIND_ARROW_WIDTH, constants.WIND_ARROW_HEIGHT))
+        angle = math.atan2(self.wind[1], self.wind[0]) * (180/math.pi)
+        self.backgroundArrow = pygame.transform.rotate(self.backgroundArrow, angle)
+        print (self.backgroundArrow.get_size(), self.backgroundArrow.get_rect())
+        return angle

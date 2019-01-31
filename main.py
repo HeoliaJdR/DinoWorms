@@ -40,9 +40,15 @@ pygame.display.flip()
 wait = True
 mouseIsDown = False
 isFullScreen = False
+changeWind = True
 
 while wait:
     newWorld.printBackground(screen)
+    
+    if(changeWind):
+        newWorld.generateWind()
+        changeWind = False
+
     proj.launchBall(screen,newWorld.getPixels())
     pygame.display.update()
 
@@ -66,6 +72,7 @@ while wait:
                     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
                     screen.blit(tempScreen, (0, 0))
                 pygame.display.flip()
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             proj.enableLoading()
         if event.type == pygame.MOUSEBUTTONUP:
