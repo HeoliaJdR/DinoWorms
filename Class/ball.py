@@ -16,11 +16,11 @@ class ball(object):
     def ballPath(startx, starty, power, ang, time):
         #print(power)
         angle = ang
-        velx = math.cos(angle) * power #-22
-        vely = math.sin(angle) * power #-17
+        velx = math.cos(angle) * power#+10 #-22
+        vely = math.sin(angle) * power#+1 #-17
 
         distX = velx * time #-22
-        distY = (vely * time) + ((-9.8 * (time ** 2)) / 2) #-1.749
+        distY = (vely * time) + ((-4.9 * (time ** 2)) / 2) #-1.749
 
         newx = round(distX + startx)
         newy = round(starty - distY)

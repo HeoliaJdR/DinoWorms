@@ -67,6 +67,10 @@ while wait:
                     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
                     screen.blit(tempScreen, (0, 0))
                 pygame.display.flip()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            proj.enableLoading()
+        if event.type == pygame.MOUSEBUTTONUP:
+            proj.releaseProjectile()
 
         if event.type == pygame.QUIT:
             wait = False

@@ -46,6 +46,18 @@ class projectile(object):
         print(pos[0],pos[1])"""
         return self.angle
 
+    def enableLoading(self):
+        if not self.shoot:
+            self.loading = 1
+    def releaseProjectile(self):
+        if not self.shoot:
+            self.x = self.golfBall.x
+            self.y = self.golfBall.y
+            pos = pygame.mouse.get_pos()
+            self.shoot = True
+            self.angle = self.findAngle(pos)
+            self.loading = 0
+
     def printProjectile(self,screen):
         screen.blit(self.img,(self.golfBall.x,self.golfBall.y))
 
@@ -102,7 +114,7 @@ class projectile(object):
         if self.loading == 1:
             self.power+=0.4
 
-        for event in pygame.event.get():
+        """for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run = False
 
@@ -118,5 +130,5 @@ class projectile(object):
                     self.shoot = True
                     self.angle = self.findAngle(pos)
                     self.loading = 0
-                    #print(self.power)
+                    #print(self.power)"""
         self.printProjectile(win)
