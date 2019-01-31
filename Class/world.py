@@ -1,4 +1,5 @@
 import pygame
+import random
 from pygame import gfxdraw
 
 class World:
@@ -55,3 +56,10 @@ class World:
         pygame.draw.rect(self.backgroundGround, (0, 0, 0, 0), pygame.Rect(xSrc, ySrc, constArea, constArea))
         pygame.draw.rect(self.backgroundMask, (0, 0, 0, 255), pygame.Rect(xSrc, ySrc, constArea, constArea))
         self.fastRegeneratePixel(xSrc, ySrc, constArea)
+
+    def generateWind(self):
+        random.seed()
+        xWind = random.randint(-10, 10)
+        yWind = random.randint(-5, 5)
+
+        return (xWind, yWind)

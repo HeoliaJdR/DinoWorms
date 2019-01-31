@@ -46,7 +46,6 @@ while wait:
     proj.launchBall(screen,newWorld.getPixels())
     pygame.display.update()
 
-
     for event in pygame.event.get():
         if (event.type == pygame.KEYDOWN):
             if event.key == pygame.K_ESCAPE:
