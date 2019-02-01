@@ -6,7 +6,7 @@ from Class import ball
 from Class import world
 
 class projectile(object):
-    def __init__(self):
+    def __init__(self, projectileType):
         self.run = True
         self.time = 0
         self.power = 0
@@ -14,21 +14,31 @@ class projectile(object):
         self.shoot = False
         self.loading = 0
         self.golfBall = ball.ball(300, 494, 20, (255, 255, 255))
-        self.grenadepath="Imgs/W4_Grenade.png"
+        self.type = projectileType
+        self.projectileImgPath="Imgs/W4_Grenade.png"
         self.touchingPoint=(0,0)
         self.totaltime = 0
+        self.line = []
+        self.loadup = True
 
     def initProjectile(self):
-        self.img = pygame.transform.scale(pygame.image.load(self.grenadepath).convert_alpha(),(30,30))
+        if self.type == 1:
+           self.projectileImgPath = "Imgs/W4_Grenade.png"
+        if self.type == 2:
+           self.projectileImgPath = "Imgs/rocket.png"
+
+        self.img = pygame.transform.scale(pygame.image.load(self.projectileImgPath).convert_alpha(), (30, 30))
 
     def redrawWindow(self,win):
         #win.fill((64, 64, 64))
         if not self.shoot:
-            self.golfBall.x = 450
-            self.golfBall.y = 495
-        #self.golfBall.draw(win)
-        #pygame.draw.line(win, (0, 0, 0), line[0], line[1])
-        #pygame.display.update()
+            self.golfBall.x = 1000
+            self.golfBall.y = 600
+        if not self.shoot:
+            pygame.draw.line(win, (0, 0, 0), self.line[0], self.line[1])
+            pygame.draw.rect(win, (0, 0, 0), (0, 0, 100, 10), 1)
+            pygame.draw.rect(win,(255,0,0),(0,0,self.power,10),0)
+
 
     def findAngle(self,pos):
         sX = self.golfBall.x
@@ -122,7 +132,14 @@ class projectile(object):
         #print(area[self.touchingPoint[0]][self.touchingPoint[1]])
         #input()
 
+    def resetBall(self):
+        self.shoot = False
+        self.power = 0
+        self.time = 0
+        self.totaltime = 0
 
+    def changeProjectile(self, projType):
+        self.type = projType
 
 
 
@@ -137,8 +154,16 @@ class projectile(object):
         if self.shoot:
             #if self.golfBall.y < 500 - self.golfBall.radius:
             k = 0
+
+
             for i in range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1):
                 for j in range(self.golfBall.y,self.golfBall.y + self.golfBall.radius-1):
+                    if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
+                        self.shoot = False
+                        self.power = 0
+                        self.time = 0
+                        self.totaltime = 0
+                        return 0
                     if area[i][j]==1 :
                         self.go = False
                         self.touchingPoint = (i,j)
@@ -150,92 +175,100 @@ class projectile(object):
                 self.golfBall.x = po[0]
                 self.golfBall.y = po[1]
             else:
-                """newWorld.destroyCircleArea(self.golfBall.x+ int(self.golfBall.radius/2),self.golfBall.y+ int(self.golfBall.radius/2),constants.MEDIUM_CIRCLE)
-                self.shoot=False
-                self.power = 0
-                self.time = 0"""
-                """shoot = False
-                power = 0
-                time = 0
-                self.golfBall.y = 494"""
-                #starting_x = self.x
-                starting_y= self.y
-                additionnal_power = self.golfBall.y-starting_y
-                normale=self.getNormal(area)
-                #print(normale)
-                self.go = True
-                if normale == constants.LEFT or normale == constants.TOPLEFT or normale == constants.BOTLEFT:
-                    self.x = self.golfBall.x - 1
-                elif normale == constants.RIGHT or normale == constants.TOPRIGHT or normale == constants.BOTRIGHT:
-                    self.x = self.golfBall.x + 1
-                self.x = self.golfBall.x
-                if normale == constants.TOP or normale == constants.TOPLEFT or normale == constants.TOPRIGHT:
-                    self.y = self.golfBall.y-1
-                elif normale == constants.BOT or normale == constants.BOTLEFT or normale == constants.BOTRIGHT:
-                    self.y = self.golfBall.y+1
-                if not normale:
-                    if area[self.golfBall.x-1][self.golfBall.y] != 1: self.x = self.golfBall.x-1
-                    elif area[self.golfBall.x+1][self.golfBall.y] != 1: self.x = self.golfBall.x + 1
-                    else: self.x = self.golfBall.x
-                    if area[self.golfBall.x][self.golfBall.y-1] != 1: self.y = self.golfBall.y-1
-                    elif area[self.golfBall.x][self.golfBall.y + 1] != 1: self.y = self.golfBall.y + 1
-                    else: self.y = self.golfBall.y
-                if normale:
-                    if self.angle<math.pi/2:
-                        if normale == constants.TOP: self.angle = self.angle*0.9
-                        if normale == constants.BOT: self.angle = (self.angle +3*math.pi/2)*0.9
-                        if normale == constants.LEFT: self.angle = (self.angle + math.pi/2)*1.1
-                        if normale == constants.TOPLEFT: self.angle = (self.angle + math.pi / 2) * 1.05
-                        if normale == constants.TOPRIGHT: self.angle = self.angle *0.8
-                        if normale == constants.BOTLEFT: self.angle = (self.angle + 3*math.pi/2)*0.8
-                        if normale == constants.BOTRIGHT: self.angle = (self.angle + 3 * math.pi / 2) * 1.1
+                if self.type == 1:
+                    """newWorld.destroyCircleArea(self.golfBall.x+ int(self.golfBall.radius/2),self.golfBall.y+ int(self.golfBall.radius/2),constants.MEDIUM_CIRCLE)
+                    self.shoot=False
+                    self.power = 0
+                    self.time = 0"""
+                    """shoot = False
+                    power = 0
+                    time = 0
+                    self.golfBall.y = 494"""
+                    #starting_x = self.x
+                    starting_y= self.y
+                    additionnal_power = self.golfBall.y-starting_y
+                    normale=self.getNormal(area)
+                    #print(normale)
+                    self.go = True
+                    if normale == constants.LEFT or normale == constants.TOPLEFT or normale == constants.BOTLEFT:
+                        self.x = self.golfBall.x - 1
+                    elif normale == constants.RIGHT or normale == constants.TOPRIGHT or normale == constants.BOTRIGHT:
+                        self.x = self.golfBall.x + 1
+                    self.x = self.golfBall.x
+                    if normale == constants.TOP or normale == constants.TOPLEFT or normale == constants.TOPRIGHT:
+                        self.y = self.golfBall.y-1
+                    elif normale == constants.BOT or normale == constants.BOTLEFT or normale == constants.BOTRIGHT:
+                        self.y = self.golfBall.y+1
+                    if not normale:
+                        if area[self.golfBall.x-1][self.golfBall.y] != 1: self.x = self.golfBall.x-1
+                        elif area[self.golfBall.x+1][self.golfBall.y] != 1: self.x = self.golfBall.x + 1
+                        else: self.x = self.golfBall.x
+                        if area[self.golfBall.x][self.golfBall.y-1] != 1: self.y = self.golfBall.y-1
+                        elif area[self.golfBall.x][self.golfBall.y + 1] != 1: self.y = self.golfBall.y + 1
+                        else: self.y = self.golfBall.y
+                    if normale:
+                        if self.angle<math.pi/2:
+                            if normale == constants.TOP: self.angle = self.angle*0.9
+                            if normale == constants.BOT: self.angle = (self.angle +3*math.pi/2)*0.9
+                            if normale == constants.LEFT: self.angle = (self.angle + math.pi/2)*1.1
+                            if normale == constants.TOPLEFT: self.angle = (self.angle + math.pi / 2) * 1.05
+                            if normale == constants.TOPRIGHT: self.angle = self.angle *0.8
+                            if normale == constants.BOTLEFT: self.angle = (self.angle + 3*math.pi/2)*0.8
+                            if normale == constants.BOTRIGHT: self.angle = (self.angle + 3 * math.pi / 2) * 1.1
 
-                    elif self.angle<math.pi:
-                        if normale == constants.TOP: self.angle = self.angle * 1.1
-                        if normale == constants.BOT: self.angle = (self.angle + math.pi/2)*1.1
-                        if normale == constants.RIGHT: self.angle = (self.angle - math.pi/2)*0.9
-                        if normale == constants.TOPLEFT: self.angle = self.angle = self.angle * 1.2
-                        if normale == constants.TOPRIGHT: self.angle = (self.angle - math.pi/2)*0.8
-                        if normale == constants.BOTLEFT: self.angle = (self.angle + math.pi/4)*1.2
-                        if normale == constants.BOTRIGHT: self.angle = (self.angle + math.pi/2)*0.9
+                        elif self.angle<math.pi:
+                            if normale == constants.TOP: self.angle = self.angle * 1.1
+                            if normale == constants.BOT: self.angle = (self.angle + math.pi/2)*1.1
+                            if normale == constants.RIGHT: self.angle = (self.angle - math.pi/2)*0.9
+                            if normale == constants.TOPLEFT: self.angle = self.angle = self.angle * 1.2
+                            if normale == constants.TOPRIGHT: self.angle = (self.angle - math.pi/2)*0.8
+                            if normale == constants.BOTLEFT: self.angle = (self.angle + math.pi/4)*1.2
+                            if normale == constants.BOTRIGHT: self.angle = (self.angle + math.pi/2)*0.9
 
-                    elif self.angle<3*math.pi/2:
-                        if normale == constants.TOP: self.angle = (self.angle - math.pi/2) * 1.1
-                        if normale == constants.RIGHT: self.angle = (self.angle + math.pi / 2) * 0.9
-                        if normale == constants.TOPLEFT: self.angle = (self.angle - math.pi / 2) * 1.2
-                        if normale == constants.TOPRIGHT: self.angle = (self.angle - math.pi) * 1.1
+                        elif self.angle<3*math.pi/2:
+                            if normale == constants.TOP: self.angle = (self.angle - math.pi/2) * 1.1
+                            if normale == constants.RIGHT: self.angle = (self.angle + math.pi / 2) * 0.9
+                            if normale == constants.TOPLEFT: self.angle = (self.angle - math.pi / 2) * 1.2
+                            if normale == constants.TOPRIGHT: self.angle = (self.angle - math.pi) * 1.1
 
-                    else:
-                        if normale == constants.TOP: self.angle = (self.angle-3*math.pi/2)*0.9
-                        if normale == constants.LEFT: self.angle = (self.angle - math.pi / 2) * 1.1
-                        if normale == constants.TOPLEFT: self.angle = (self.angle - math.pi) * 1.1
-                        if normale == constants.TOPRIGHT: self.angle = (self.angle-3*math.pi/2)*0.8
+                        else:
+                            if normale == constants.TOP: self.angle = (self.angle-3*math.pi/2)*0.9
+                            if normale == constants.LEFT: self.angle = (self.angle - math.pi / 2) * 1.1
+                            if normale == constants.TOPLEFT: self.angle = (self.angle - math.pi) * 1.1
+                            if normale == constants.TOPRIGHT: self.angle = (self.angle-3*math.pi/2)*0.8
 
-                if self.time>1: self.power = self.power / (self.time/30+1)+additionnal_power/10
-                else: self.power = self.power * 0.8
-                self.time = 0
-                po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
-                self.golfBall.x = po[0]
-                self.golfBall.y = po[1]
-
-                #pos = pygame.mouse.get_pos()
-                #shoot = True
-                #angle = findAngle(pos)
-            #if abs(po[2]) < 0.1 and abs(po[3]) < 0.1:
-            if pygame.time.get_ticks()-self.totaltime >= 3000:
-                self.shoot = False
-                self.power = 0
-                self.time = 0
-                self.totaltime = 0
-                newWorld.destroyCircleArea(self.golfBall.x, self.golfBall.y, constants.MEDIUM_CIRCLE)
-                self.golfBall.y = 494
+                    if self.time>1: self.power = self.power / (self.time/30+1)+additionnal_power/10
+                    else: self.power = self.power * 0.8
+                    self.time = 0
+                    po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
+                    self.golfBall.x = po[0]
+                    self.golfBall.y = po[1]
+                    # pos = pygame.mouse.get_pos()
+                    # shoot = True
+                    # angle = findAngle(pos)
+                    # if abs(po[2]) < 0.1 and abs(po[3]) < 0.1:
+                    if pygame.time.get_ticks() - self.totaltime >= 3000:
+                        self.resetBall()
+                        newWorld.destroyCircleArea(self.golfBall.x, self.golfBall.y, constants.MEDIUM_CIRCLE)
+                elif self.type == 2:
+                    self.resetBall()
+                    newWorld.destroyCircleArea(self.golfBall.x, self.golfBall.y, constants.MEDIUM_CIRCLE)
 
 
-        line = [(self.golfBall.x, self.golfBall.y), pygame.mouse.get_pos()]
+        self.line = [(int(self.golfBall.x + self.golfBall.radius), int(self.golfBall.y + self.golfBall.radius)),pygame.mouse.get_pos()]
         self.redrawWindow(win)
 
         if self.loading == 1:
-            self.power+=1
+            if self.loadup == True:
+                if self.power < 100:
+                    self.power+=1
+                else:
+                    self.loadup = False
+            else:
+                if self.power > 0:
+                    self.power-=1
+                else:
+                    self.loadup = True
 
         """for event in pygame.event.get():
             if event.type == pygame.QUIT:

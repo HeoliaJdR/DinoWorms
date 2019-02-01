@@ -17,8 +17,8 @@ class ball(object):
     def ballPath(startx, starty, power, ang, time, wind):
         #print(power)
         angle = ang
-        velx = math.cos(angle) * power+wind[0] #-22
-        vely = math.sin(angle) * power+wind[1] #-17
+        velx = math.cos(angle) * power+wind[0]*2 #-22
+        vely = math.sin(angle) * power+wind[1]*2 #-17
 
         distX = velx * time #-22
         distY = (vely * time) + ((-4.9 * (time ** 2)) / 2) #-1.749

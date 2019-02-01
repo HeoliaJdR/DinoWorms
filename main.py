@@ -24,7 +24,7 @@ newWorld.initBackground()
 newWorld.printBackground(screen)
 
 #init projectile(test)
-proj = projectile.projectile()
+proj = projectile.projectile(2)
 proj.initProjectile()
 
 player = characters.Characters(100)
@@ -82,6 +82,12 @@ while wait:
                 pygame.display.flip()
             if event.key == pygame.K_h:
                 changeWind = True
+            if event.key == pygame.K_1:
+                proj.changeProjectile(1)
+                proj.initProjectile()
+            if event.key == pygame.K_2:
+                proj.changeProjectile(2)
+                proj.initProjectile()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             proj.enableLoading()
