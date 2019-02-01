@@ -13,6 +13,7 @@ class World:
         self.screenH = screenHeight
         self.screenW = screenWidth
         self.pixels = [[1] * screenHeight for i in range(screenWidth)]
+        self.lastAngle = 0
 
     def generatePixel(self):
         self.backgroundMask = pygame.transform.scale(pygame.image.load(self.backgroundMaskImgPath).convert(), (self.screenW, self.screenH))
@@ -44,13 +45,17 @@ class World:
     def initBackground(self):
         self.backgroundSky = pygame.transform.scale(pygame.image.load(self.backgroundSkyImgPath).convert(), (self.screenW, self.screenH))
         self.backgroundGround = pygame.transform.scale(pygame.image.load(self.backgroundGroundImgPath).convert_alpha(), (self.screenW, self.screenH))
-        self.backgroundArrow = pygame.image.load(self.arrowWindPath).convert_alpha()
+        self.originalArrow = pygame.image.load(self.arrowWindPath).convert_alpha()
+        self.backgroundArrow = self.originalArrow
+        self.rect = self.backgroundArrow.get_rect()
+        self.rect.center = (self.screenW - 100, 100)
+        self.updateAngle = 0
         self.generatePixel()
 
     def printBackground(self, screen):
         screen.blit(self.backgroundSky, (0, 0))
         screen.blit(self.backgroundGround, (0, 0))
-        screen.blit(self.backgroundArrow, (self.screenW - 100, 0))
+        screen.blit(self.backgroundArrow, self.rect)
 
     def destroyCircleArea(self, xSrc, ySrc, constArea):
         pygame.draw.circle(self.backgroundGround, (0, 0, 0, 0), (xSrc, ySrc), constArea)
@@ -73,9 +78,27 @@ class World:
     def getWind(self):
         return self.wind
 
+    def animWindArrow(self):
+        self.backgroundArrow = pygame.transform.rotate(self.originalArrow, self.currentAngle)
+        if self.currentAngle < self.angle or self.currentAngle > self.angle:
+            if self.currentAngle < self.angle:
+                self.currentAngle += 5
+                if self.currentAngle > self.angle:
+                    self.currentAngle = self.angle
+
+            if self.currentAngle > self.angle:
+                self.currentAngle -= 5
+                if self.currentAngle < self.angle:
+                    self.currentAngle = self.angle
+        else:
+            self.needChangeArrow = False
+
+        x, y = self.rect.center
+        self.rect = self.backgroundArrow.get_rect()
+        self.rect.center = x, y
+
     def setWindArrowAngle(self):
-        self.backgroundArrow = pygame.transform.scale(pygame.image.load(self.arrowWindPath).convert_alpha(), (constants.WIND_ARROW_WIDTH, constants.WIND_ARROW_HEIGHT))
-        angle = math.atan2(self.wind[1], self.wind[0]) * (180/math.pi)
-        self.backgroundArrow = pygame.transform.rotate(self.backgroundArrow, angle)
-        print (self.backgroundArrow.get_size(), self.backgroundArrow.get_rect())
-        return angle
+        self.angle = math.atan2(self.wind[1], self.wind[0]) * (180/math.pi)
+        self.needChangeArrow = True
+        self.currentAngle = self.lastAngle
+        self.lastAngle = self.angle

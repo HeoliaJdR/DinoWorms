@@ -50,10 +50,14 @@ changeWind = True
 while wait:
     newWorld.printBackground(screen)
     player.displayCharacter(screen)
-    if(changeWind):
+
+    if changeWind:
         newWorld.generateWind()
         changeWind = False
-    proj.launchBall(screen,newWorld.getPixels())
+    if newWorld.needChangeArrow:
+        newWorld.animWindArrow()
+
+    proj.launchBall(screen, newWorld.getPixels(), newWorld)
     pygame.display.update()
 
     for event in pygame.event.get():
@@ -76,6 +80,8 @@ while wait:
                     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
                     screen.blit(tempScreen, (0, 0))
                 pygame.display.flip()
+            if event.key == pygame.K_h:
+                changeWind = True
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             proj.enableLoading()
