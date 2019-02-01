@@ -58,11 +58,15 @@ class World:
         screen.blit(self.backgroundArrow, self.rect)
 
     def destroyCircleArea(self, xSrc, ySrc, constArea):
+        xSrc = int(xSrc)
+        ySrc = int(ySrc)
         pygame.draw.circle(self.backgroundGround, (0, 0, 0, 0), (xSrc, ySrc), constArea)
         pygame.draw.circle(self.backgroundMask, (0, 0, 0, 255), (xSrc, ySrc), constArea)
         self.fastRegeneratePixel(xSrc, ySrc, constArea)
 
     def destroyLine(self, xSrc, ySrc, constArea):
+        xSrc = int(xSrc)
+        ySrc = int(ySrc)
         pygame.draw.rect(self.backgroundGround, (0, 0, 0, 0), pygame.Rect(xSrc, ySrc, constArea, constArea))
         pygame.draw.rect(self.backgroundMask, (0, 0, 0, 255), pygame.Rect(xSrc, ySrc, constArea, constArea))
         self.fastRegeneratePixel(xSrc, ySrc, constArea)

@@ -163,10 +163,6 @@ class projectile(object):
             return
 
         if self.shoot:
-            #if self.golfBall.y < 500 - self.golfBall.radius:
-            k = 0
-
-
             for i in range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1):
                 for j in range(self.golfBall.y,self.golfBall.y + self.golfBall.radius-1):
                     if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
