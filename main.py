@@ -6,6 +6,7 @@ from Class import characters
 from Class import world
 from Class import projectile
 from Class import sprites
+from Class import animation
 
 # Adapt to the monitor size
 rootSystem = tk.Tk()
@@ -97,7 +98,7 @@ while wait:
         if event.type == pygame.QUIT:
             wait = False
 
-        pygame.time.delay(int(1000 / constants.FRAME_PER_SECOND))
+    pygame.time.delay(int(1000 / constants.FRAME_PER_SECOND))
     pygame.display.update()
 
 pygame.quit()

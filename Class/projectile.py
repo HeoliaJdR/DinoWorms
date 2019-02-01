@@ -3,7 +3,7 @@ import math
 import constants
 
 from Class import ball
-from Class import world
+from Class import animation
 
 class projectile(object):
     def __init__(self, projectileType):
@@ -20,6 +20,12 @@ class projectile(object):
         self.totaltime = 0
         self.line = []
         self.loadup = True
+
+        """ Ajout des animations"""
+        self.launchAnim = False
+        self.anim = animation.Animation("Imgs/explosion-sprite-sheet-png-3.png", (130, 130), (0, 0), 25, 5, 5, 5, False)
+        self.anim.extraParameter(scale=(130 + constants.MEDIUM_CIRCLE, 130 + constants.MEDIUM_CIRCLE))
+        self.origAnim = (0, 0)
 
     def initProjectile(self):
         if self.type == 1:
@@ -143,13 +149,18 @@ class projectile(object):
 
 
 
-    def launchBall(self,win, area,newWorld):
+    def launchBall(self, win, area,newWorld):
         """run = True
         time = 0
         power = 0
         angle = 0
         shoot = False
         loading = 0"""
+
+
+        if self.launchAnim:
+            self.launchAnim = self.anim.playAnim(win, self.origAnim)
+            return
 
         if self.shoot:
             #if self.golfBall.y < 500 - self.golfBall.radius:
@@ -170,7 +181,7 @@ class projectile(object):
                         break
             #if area[self.golfBall.x + self.golfBall.radius][self.golfBall.y + self.golfBall.radius*2] == 0 and area[self.golfBall.x][self.golfBall.y + self.golfBall.radius*2] == 0 and area[self.golfBall.x + self.golfBall.radius][self.golfBall.y] == 0 and area[self.golfBall.x][self.golfBall.y] == 0:
             if self.go:
-                self.time += 0.1
+                self.time += 0.15
                 po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
                 self.golfBall.x = po[0]
                 self.golfBall.y = po[1]
@@ -215,7 +226,6 @@ class projectile(object):
                             if normale == constants.TOPRIGHT: self.angle = self.angle *0.8
                             if normale == constants.BOTLEFT: self.angle = (self.angle + 3*math.pi/2)*0.8
                             if normale == constants.BOTRIGHT: self.angle = (self.angle + 3 * math.pi / 2) * 1.1
-
                         elif self.angle<math.pi:
                             if normale == constants.TOP: self.angle = self.angle * 1.1
                             if normale == constants.BOT: self.angle = (self.angle + math.pi/2)*1.1
@@ -224,13 +234,11 @@ class projectile(object):
                             if normale == constants.TOPRIGHT: self.angle = (self.angle - math.pi/2)*0.8
                             if normale == constants.BOTLEFT: self.angle = (self.angle + math.pi/4)*1.2
                             if normale == constants.BOTRIGHT: self.angle = (self.angle + math.pi/2)*0.9
-
                         elif self.angle<3*math.pi/2:
                             if normale == constants.TOP: self.angle = (self.angle - math.pi/2) * 1.1
                             if normale == constants.RIGHT: self.angle = (self.angle + math.pi / 2) * 0.9
                             if normale == constants.TOPLEFT: self.angle = (self.angle - math.pi / 2) * 1.2
                             if normale == constants.TOPRIGHT: self.angle = (self.angle - math.pi) * 1.1
-
                         else:
                             if normale == constants.TOP: self.angle = (self.angle-3*math.pi/2)*0.9
                             if normale == constants.LEFT: self.angle = (self.angle - math.pi / 2) * 1.1
@@ -249,11 +257,30 @@ class projectile(object):
                     # if abs(po[2]) < 0.1 and abs(po[3]) < 0.1:
                     if pygame.time.get_ticks() - self.totaltime >= 3000:
                         self.resetBall()
-                        newWorld.destroyCircleArea(self.golfBall.x, self.golfBall.y, constants.MEDIUM_CIRCLE)
+                        self.launchAnim = True
+                        self.anim.extraParameter(function=(
+                            newWorld.destroyCircleArea,
+                            3,
+                            [self.golfBall.x + self.golfBall.radius / 2, self.golfBall.y + self.golfBall.radius / 2,
+                             constants.MEDIUM_CIRCLE]
+                        ))
+                        self.origAnim = (
+                            self.golfBall.x + self.golfBall.radius / 2,
+                            self.golfBall.y + self.golfBall.radius / 2
+                        )
                 elif self.type == 2:
                     self.resetBall()
-                    newWorld.destroyCircleArea(self.golfBall.x, self.golfBall.y, constants.MEDIUM_CIRCLE)
-
+                    self.launchAnim = True
+                    self.anim.extraParameter(function=(
+                        newWorld.destroyCircleArea,
+                        3,
+                        [self.golfBall.x + self.golfBall.radius / 2, self.golfBall.y + self.golfBall.radius / 2,
+                         constants.MEDIUM_CIRCLE]
+                    ))
+                    self.origAnim = (
+                        self.golfBall.x + self.golfBall.radius / 2,
+                        self.golfBall.y + self.golfBall.radius / 2
+                    )
 
         self.line = [(int(self.golfBall.x + self.golfBall.radius), int(self.golfBall.y + self.golfBall.radius)),pygame.mouse.get_pos()]
         self.redrawWindow(win)
