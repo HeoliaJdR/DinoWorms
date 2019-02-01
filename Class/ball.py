@@ -1,5 +1,6 @@
 import pygame
 import math
+from Class import world
 
 class ball(object):
     def __init__(self, x, y, radius, color):
@@ -13,11 +14,11 @@ class ball(object):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius - 1)
 
     @staticmethod
-    def ballPath(startx, starty, power, ang, time):
+    def ballPath(startx, starty, power, ang, time, wind):
         #print(power)
         angle = ang
-        velx = math.cos(angle) * power#+10 #-22
-        vely = math.sin(angle) * power#+1 #-17
+        velx = math.cos(angle) * power+wind[0] #-22
+        vely = math.sin(angle) * power+wind[1] #-17
 
         distX = velx * time #-22
         distY = (vely * time) + ((-4.9 * (time ** 2)) / 2) #-1.749

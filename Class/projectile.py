@@ -1,6 +1,7 @@
 import pygame
 import math
 import constants
+
 from Class import ball
 from Class import world
 
@@ -12,9 +13,10 @@ class projectile(object):
         self.angle = 0
         self.shoot = False
         self.loading = 0
-        self.golfBall = ball.ball(300, 494, 25, (255, 255, 255))
+        self.golfBall = ball.ball(300, 494, 20, (255, 255, 255))
         self.grenadepath="Imgs/W4_Grenade.png"
         self.touchingPoint=(0,0)
+        self.totaltime = 0
 
     def initProjectile(self):
         self.img = pygame.transform.scale(pygame.image.load(self.grenadepath).convert_alpha(),(30,30))
@@ -60,6 +62,7 @@ class projectile(object):
             self.shoot = True
             self.angle = self.findAngle(pos)
             self.loading = 0
+            self.totaltime = pygame.time.get_ticks()
             self.go = True
 
     def printProjectile(self,screen):
@@ -143,7 +146,7 @@ class projectile(object):
             #if area[self.golfBall.x + self.golfBall.radius][self.golfBall.y + self.golfBall.radius*2] == 0 and area[self.golfBall.x][self.golfBall.y + self.golfBall.radius*2] == 0 and area[self.golfBall.x + self.golfBall.radius][self.golfBall.y] == 0 and area[self.golfBall.x][self.golfBall.y] == 0:
             if self.go:
                 self.time += 0.1
-                po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time)
+                po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
                 self.golfBall.x = po[0]
                 self.golfBall.y = po[1]
             else:
@@ -211,17 +214,19 @@ class projectile(object):
                 if self.time>1: self.power = self.power / (self.time/30+1)+additionnal_power/10
                 else: self.power = self.power * 0.8
                 self.time = 0
-                po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time)
+                po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
                 self.golfBall.x = po[0]
                 self.golfBall.y = po[1]
 
                 #pos = pygame.mouse.get_pos()
                 #shoot = True
                 #angle = findAngle(pos)
-            if abs(po[2]) < 0.1 and abs(po[3]) < 0.1:
+            #if abs(po[2]) < 0.1 and abs(po[3]) < 0.1:
+            if pygame.time.get_ticks()-self.totaltime >= 3000:
                 self.shoot = False
                 self.power = 0
                 self.time = 0
+                self.totaltime = 0
                 newWorld.destroyCircleArea(self.golfBall.x, self.golfBall.y, constants.MEDIUM_CIRCLE)
                 self.golfBall.y = 494
 

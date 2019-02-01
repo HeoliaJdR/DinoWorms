@@ -91,7 +91,7 @@ while wait:
         if event.type == pygame.QUIT:
             wait = False
 
-    #pygame.time.delay(50)
+        pygame.time.delay(int(1000 / constants.FRAME_PER_SECOND))
     pygame.display.update()
 
 pygame.quit()
