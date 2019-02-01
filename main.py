@@ -5,8 +5,24 @@ import tkinter as tk
 from Class import characters
 from Class import world
 from Class import projectile
+from Class import menu
 from Class import sprites
 from Class import animation
+
+def initGame():
+    # Start World
+    newWorld = world.World(screenHeight - 200, screenWith - 200)
+    newWorld.initBackground()
+    newWorld.generateWind()
+
+    # init projectile(test)
+    proj = projectile.projectile(2)
+    proj.initProjectile()
+
+    player = characters.Characters(100)
+    player.initCharacter()
+
+    return newWorld, proj, player
 
 # Adapt to the monitor size
 rootSystem = tk.Tk()
@@ -19,18 +35,8 @@ pygame.init()
 pygame.display.init()
 screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.RESIZABLE)
 
-#Start World
-newWorld = world.World(screenHeight - 200, screenWith - 200)
-newWorld.initBackground()
-newWorld.printBackground(screen)
-
-#init projectile(test)
-proj = projectile.projectile(2)
-proj.initProjectile()
-
-player = characters.Characters(100)
-player.initCharacter()
-
+# Init Menu
+mainMenu = menu.Menu((screenWith, screenHeight))
 
 """
 #Start Pygame
@@ -45,10 +51,33 @@ pygame.display.flip()
 
 wait = True
 mouseIsDown = False
+changeWind = False
 isFullScreen = False
-changeWind = True
+
+inMenu = True
+leavingMenu = False
 
 while wait:
+
+    if inMenu:
+        leavingMenu = False
+        mainMenu.chooseMenu(screen)
+        menuAction = mainMenu.eventMenu()
+        pygame.display.update()
+
+        if menuAction == constants.ACTION_PLAY:
+            inMenu = False
+            leavingMenu = True
+            newWorld, proj, player = initGame()
+        elif menuAction == constants.ACTION_CONTINUE:
+            inMenu = False
+            leavingMenu = True
+        elif menuAction == constants.ACTION_BACK_TO_MENU:
+            mainMenu.constMenu = constants.MAIN_MENU
+        elif menuAction == constants.ACTION_LEAVE:
+            wait = False
+        continue
+
     newWorld.printBackground(screen)
     player.displayCharacter(screen)
 
@@ -62,9 +91,14 @@ while wait:
     pygame.display.update()
 
     for event in pygame.event.get():
+        if leavingMenu:
+            leavingMenu = False
+            break
+
         if (event.type == pygame.KEYDOWN):
             if event.key == pygame.K_ESCAPE:
-                 wait = False
+                inMenu = True
+                mainMenu.constMenu = constants.PAUSE_MENU
             if event.key == pygame.K_f:
                 if isFullScreen:
                     isFullScreen = False
