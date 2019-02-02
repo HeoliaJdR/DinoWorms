@@ -20,6 +20,8 @@ class projectile(object):
         self.totaltime = 0
         self.line = []
         self.loadup = True
+        self.trajectory=[]
+        self.drawTrajectories=False
 
         """ Ajout des animations"""
         self.launchAnim = False
@@ -44,6 +46,9 @@ class projectile(object):
             pygame.draw.line(win, (0, 0, 0), self.line[0], self.line[1])
             pygame.draw.rect(win, (0, 0, 0), (0, 0, 100, 10), 1)
             pygame.draw.rect(win,(255,0,0),(0,0,self.power,10),0)
+
+        for point in self.trajectory:
+            pygame.draw.rect(win, (0, 0, 0), (point[0], point[1], 3, 3), 0)
 
 
     def findAngle(self,pos):
@@ -82,9 +87,10 @@ class projectile(object):
             self.go = True
 
     def printProjectile(self,screen):
-        screen.blit(self.img,(self.golfBall.x,self.golfBall.y))
+        if self.shoot:
+            screen.blit(self.img,(self.golfBall.x,self.golfBall.y))
 
-    def getNormal(self,area):
+    def getNormal(self,area, range):
         """point1 = (0, 0)
         point2 = (0, 0)
         for i in range(self.golfBall.x - (self.golfBall.radius - 1)/2,self.golfBall.x + (self.golfBall.radius - 1)/2):
@@ -99,33 +105,33 @@ class projectile(object):
                     break;
         if point1 == point2:"""
         points = (#area[int(self.touchingPoint[0] - (self.golfBall.radius - 1)/2)][int(self.touchingPoint[1] - (self.golfBall.radius - 1)/2)],
-                  area[int(self.touchingPoint[0] - 5)][int(self.touchingPoint[1] - 5)],
+                  area[int(self.touchingPoint[0] - range)][int(self.touchingPoint[1] - range)],
                   #area[self.touchingPoint[0]-1][self.touchingPoint[1]],
-                  area[int(self.touchingPoint[0])][int(self.touchingPoint[1] - 5)],
-                  area[int(self.touchingPoint[0] + 5)][int(self.touchingPoint[1] - 5)],
-                  area[int(self.touchingPoint[0] - 5)][int(self.touchingPoint[1])],
-                  area[int(self.touchingPoint[0] + 5)][int(self.touchingPoint[1])],
-                  area[int(self.touchingPoint[0] - 5)][int(self.touchingPoint[1] + 5)],
-                  area[int(self.touchingPoint[0])][int(self.touchingPoint[1] + 5)],
-                  area[int(self.touchingPoint[0] + 5)][int(self.touchingPoint[1] + 5)])
+                  area[int(self.touchingPoint[0])][int(self.touchingPoint[1] - range)],
+                  area[int(self.touchingPoint[0] + range)][int(self.touchingPoint[1] - range)],
+                  area[int(self.touchingPoint[0] - range)][int(self.touchingPoint[1])],
+                  area[int(self.touchingPoint[0] + range)][int(self.touchingPoint[1])],
+                  area[int(self.touchingPoint[0] - range)][int(self.touchingPoint[1] + range)],
+                  area[int(self.touchingPoint[0])][int(self.touchingPoint[1] + range)],
+                  area[int(self.touchingPoint[0] + range)][int(self.touchingPoint[1] + range)])
         """point (0,1,2
                   3,  4
                   5,6,7)"""
-        if (points[0] == 0 and points[1] == 0 and points[2] == 0) and ((points[3] == 1 and points[4] == 1) or (points[5] == 0 and points[6] == 1 and points[7] == 0) or (points[5] == 1 and points[6] == 1 and points[7] == 1)):
+        if points[1] == 0 and ((points[3] == 1 and points[4] == 1) or (points[5] == 0 and points[6] == 1 and points[7] == 0) or (points[5] == 1 and points[6] == 1 and points[7] == 1)):
             return constants.TOP
-        if (points[5] == 0 and points[6] == 0 and points[7] == 0) and ((points[3] == 1 and points[4] == 1) or (points[0] == 0 and points[1] == 1 and points[2] == 0) or (points[0] == 1 and points[1] == 1 and points[2] == 1)):
+        if points[6] == 0 and ((points[3] == 1 and points[4] == 1) or (points[0] == 0 and points[1] == 1 and points[2] == 0) or (points[0] == 1 and points[1] == 1 and points[2] == 1)):
             return constants.BOT
-        if (points[0] == 0 and points[3] == 0 and points[5] == 0) and ((points[1] == 1 and points[6] == 1) or (points[2] == 0 and points[4] == 1 and points[7] == 0) or (points[2] == 1 and points[4] == 1 and points[7] == 1)):
+        if points[3] == 0 and ((points[1] == 1 and points[6] == 1) or (points[2] == 0 and points[4] == 1 and points[7] == 0) or (points[2] == 1 and points[4] == 1 and points[7] == 1)):
             return constants.LEFT
-        if (points[2] == 0 and points[4] == 0 and points[7] == 0) and ((points[1] == 1 and points[6] == 1) or (points[0] == 0 and points[3] == 1 and points[5] == 0) or (points[0] == 1 and points[3] == 1 and points[5] == 1)):
+        if points[4] == 0 and ((points[1] == 1 and points[6] == 1) or (points[0] == 0 and points[3] == 1 and points[5] == 0) or (points[0] == 1 and points[3] == 1 and points[5] == 1)):
             return constants.RIGHT
-        if (points[0] == 0 and points[1] == 0 and points[3] == 0) and ((points[2] == 1 and points[5] == 1) or (points[4] == 1 and points[6] == 1) or (points[5] == 0 and points[6] == 1 and points[7] == 1) or (points[5] == 0 and points[6] == 0 and points[7] == 1 and points[4] == 0 and points[2] == 0)):
+        if points[0] == 0 and ((points[2] == 1 and points[5] == 1) or (points[4] == 1 and points[6] == 1) or (points[5] == 0 and points[6] == 1 and points[7] == 1) or (points[5] == 0 and points[6] == 0 and points[7] == 1 and points[4] == 0 and points[2] == 0) or (points[2] == 0 and points[4] == 1 and points[7] == 1)):
             return constants.TOPLEFT
-        if (points[1] == 0 and points[2] == 0 and points[4] == 0) and ((points[0] == 1 and points[7] == 1) or (points[3] == 1 and points[6] == 1) or (points[5] == 1 and points[6] == 1 and points[7] == 0) or (points[5] == 1 and points[6] == 0 and points[7] == 0 and points[0] == 0 and points[3] == 0)):
+        if points[2] == 0 and ((points[0] == 1 and points[7] == 1) or (points[3] == 1 and points[6] == 1) or (points[5] == 1 and points[6] == 1 and points[7] == 0) or (points[5] == 1 and points[6] == 0 and points[7] == 0 and points[0] == 0 and points[3] == 0) or (points[0] == 0 and points[3] == 1 and points[5] == 1)):
             return constants.TOPRIGHT
-        if (points[3] == 0 and points[5] == 0 and points[6] == 0) and ((points[0] == 1 and points[7] == 1) or (points[1] == 1 and points[4] == 1) or (points[0] == 0 and points[1] == 1 and points[2] == 1) or (points[2] == 1 and points[0] == 0 and points[1] == 0 and points[4] == 0 and points[7] == 0)):
+        if points[5] == 0 and ((points[0] == 1 and points[7] == 1) or (points[1] == 1 and points[4] == 1) or (points[0] == 0 and points[1] == 1 and points[2] == 1) or (points[2] == 1 and points[0] == 0 and points[1] == 0 and points[4] == 0 and points[7] == 0) or (points[2] == 1 and points[4] == 1 and points[7] == 0)):
             return constants.BOTLEFT
-        if (points[4] == 0 and points[6] == 0 and points[7] == 0) and ((points[2] == 1 and points[5] == 1) or (points[1] == 1 and points[3] == 1) or (points[0] == 1 and points[1] == 1 and points[2] == 0) or (points[0] == 0 and points[1] == 0 and points[2] == 1 and points[3] == 0 and points[5] == 0)):
+        if points[7] == 0 and ((points[2] == 1 and points[5] == 1) or (points[1] == 1 and points[3] == 1) or (points[0] == 1 and points[1] == 1 and points[2] == 0) or (points[0] == 0 and points[1] == 0 and points[2] == 1 and points[3] == 0 and points[5] == 0) or (points[0] == 1 and points[3] == 1 and points[5] == 0)):
             return constants.BOTRIGHT
         """if (points[6] == 1): return constants.TOP
         if (points[1] == 1): return constants.BOT
@@ -133,7 +139,7 @@ class projectile(object):
         if (points[4] == 1): return constants.LEFT
 
         return constants.TOP"""
-
+        return self.getNormal(area,range+1)
         #print(points)
         #print(area[self.touchingPoint[0]][self.touchingPoint[1]])
         #input()
@@ -145,8 +151,14 @@ class projectile(object):
         self.totaltime = 0
 
     def changeProjectile(self, projType):
-        self.type = projType
+        if not self.shoot:
+            self.type = projType
 
+    def enableTrajectory(self):
+        self.drawTrajectories = not self.drawTrajectories
+
+    def cleanTrajectory(self):
+        self.trajectory = []
 
 
     def launchBall(self, win, area,newWorld):
@@ -156,8 +168,8 @@ class projectile(object):
         angle = 0
         shoot = False
         loading = 0"""
-
-
+        if self.drawTrajectories:
+            self.trajectory.append((int(self.golfBall.x+self.golfBall.radius/2), int(self.golfBall.y+self.golfBall.radius/2)))
         if self.launchAnim:
             self.launchAnim = self.anim.playAnim(win, self.origAnim)
             return
@@ -177,10 +189,10 @@ class projectile(object):
                         break
             #if area[self.golfBall.x + self.golfBall.radius][self.golfBall.y + self.golfBall.radius*2] == 0 and area[self.golfBall.x][self.golfBall.y + self.golfBall.radius*2] == 0 and area[self.golfBall.x + self.golfBall.radius][self.golfBall.y] == 0 and area[self.golfBall.x][self.golfBall.y] == 0:
             if self.go:
-                self.time += 0.15
-                po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
-                self.golfBall.x = po[0]
-                self.golfBall.y = po[1]
+                    self.time += 0.15
+                    po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
+                    self.golfBall.x = po[0]
+                    self.golfBall.y = po[1]
             else:
                 if self.type == 1:
                     """newWorld.destroyCircleArea(self.golfBall.x+ int(self.golfBall.radius/2),self.golfBall.y+ int(self.golfBall.radius/2),constants.MEDIUM_CIRCLE)
@@ -194,25 +206,24 @@ class projectile(object):
                     #starting_x = self.x
                     starting_y= self.y
                     additionnal_power = self.golfBall.y-starting_y
-                    normale=self.getNormal(area)
+                    normale=self.getNormal(area,1)
                     #print(normale)
                     self.go = True
                     if normale == constants.LEFT or normale == constants.TOPLEFT or normale == constants.BOTLEFT:
                         self.x = self.golfBall.x - 1
-                    elif normale == constants.RIGHT or normale == constants.TOPRIGHT or normale == constants.BOTRIGHT:
+                    elif normale == constants.RIGHT or normale == constants.TOPRIGHT or normale == constants.BOTRIGHT or normale == constants.TOP or normale == constants.BOT:
                         self.x = self.golfBall.x + 1
-                    self.x = self.golfBall.x
-                    if normale == constants.TOP or normale == constants.TOPLEFT or normale == constants.TOPRIGHT:
+                    if normale == constants.TOP or normale == constants.TOPLEFT or normale == constants.TOPRIGHT or normale == constants.LEFT or normale == constants.RIGHT:
                         self.y = self.golfBall.y-1
                     elif normale == constants.BOT or normale == constants.BOTLEFT or normale == constants.BOTRIGHT:
                         self.y = self.golfBall.y+1
-                    if not normale:
-                        if area[self.golfBall.x-1][self.golfBall.y] != 1: self.x = self.golfBall.x-1
-                        elif area[self.golfBall.x+1][self.golfBall.y] != 1: self.x = self.golfBall.x + 1
+                    """if not normale:
+                        if (area[self.golfBall.x-1][self.golfBall.y] != 1 and area[self.golfBall.x-1][self.golfBall.y-1] != 1 and area[self.golfBall.x-1][self.golfBall.y+1] != 1) and (area[self.golfBall.x+1][self.golfBall.y] == 1 or area[self.golfBall.x+1][self.golfBall.y+1] == 1 or area[self.golfBall.x+1][self.golfBall.y-1] == 1): self.x = self.golfBall.x-1
+                        elif (area[self.golfBall.x+1][self.golfBall.y] != 1 and area[self.golfBall.x+1][self.golfBall.y-1] != 1 and area[self.golfBall.x+1][self.golfBall.y+1] != 1) and (area[self.golfBall.x-1][self.golfBall.y] == 1 or area[self.golfBall.x-1][self.golfBall.y-1] == 1 or area[self.golfBall.x-1][self.golfBall.y+1] == 1): self.x = self.golfBall.x + 1
                         else: self.x = self.golfBall.x
-                        if area[self.golfBall.x][self.golfBall.y-1] != 1: self.y = self.golfBall.y-1
-                        elif area[self.golfBall.x][self.golfBall.y + 1] != 1: self.y = self.golfBall.y + 1
-                        else: self.y = self.golfBall.y
+                        if (area[self.golfBall.x][self.golfBall.y-1] != 1 and area[self.golfBall.x-1][self.golfBall.y-1] != 1 and area[self.golfBall.x+1][self.golfBall.y-1] != 1) and (area[self.golfBall.x][self.golfBall.y-1] == 1 or area[self.golfBall.x-1][self.golfBall.y-1] == 1 or area[self.golfBall.x+1][self.golfBall.y-1] == 1): self.y = self.golfBall.y-1
+                        elif (area[self.golfBall.x][self.golfBall.y+1] != 1 and area[self.golfBall.x-1][self.golfBall.y+1] != 1 and area[self.golfBall.x+1][self.golfBall.y+1] != 1) and (area[self.golfBall.x][self.golfBall.y+1] == 1 or area[self.golfBall.x-1][self.golfBall.y+1] == 1 or area[self.golfBall.x+1][self.golfBall.y+1] == 1): self.y = self.golfBall.y + 1
+                        else: self.y = self.golfBall.y"""
                     if normale:
                         if self.angle<math.pi/2:
                             if normale == constants.TOP: self.angle = self.angle*0.9
@@ -232,7 +243,9 @@ class projectile(object):
                             if normale == constants.BOTRIGHT: self.angle = (self.angle + math.pi/2)*0.9
                         elif self.angle<3*math.pi/2:
                             if normale == constants.TOP: self.angle = (self.angle - math.pi/2) * 1.1
-                            if normale == constants.RIGHT: self.angle = (self.angle + math.pi / 2) * 0.9
+                            if normale == constants.RIGHT:
+                                self.angle = (self.angle + math.pi / 2) * 0.9
+                                print("ui")
                             if normale == constants.TOPLEFT: self.angle = (self.angle - math.pi / 2) * 1.2
                             if normale == constants.TOPRIGHT: self.angle = (self.angle - math.pi) * 1.1
                         else:
@@ -251,19 +264,6 @@ class projectile(object):
                     # shoot = True
                     # angle = findAngle(pos)
                     # if abs(po[2]) < 0.1 and abs(po[3]) < 0.1:
-                    if pygame.time.get_ticks() - self.totaltime >= 3000:
-                        self.resetBall()
-                        self.launchAnim = True
-                        self.anim.extraParameter(function=(
-                            newWorld.destroyCircleArea,
-                            3,
-                            [self.golfBall.x + self.golfBall.radius / 2, self.golfBall.y + self.golfBall.radius / 2,
-                             constants.MEDIUM_CIRCLE]
-                        ))
-                        self.origAnim = (
-                            self.golfBall.x + self.golfBall.radius / 2,
-                            self.golfBall.y + self.golfBall.radius / 2
-                        )
                 elif self.type == 2:
                     self.resetBall()
                     self.launchAnim = True
@@ -277,6 +277,19 @@ class projectile(object):
                         self.golfBall.x + self.golfBall.radius / 2,
                         self.golfBall.y + self.golfBall.radius / 2
                     )
+            if self.type == 1 and pygame.time.get_ticks() - self.totaltime >= 3000:
+                self.resetBall()
+                self.launchAnim = True
+                self.anim.extraParameter(function=(
+                    newWorld.destroyCircleArea,
+                    3,
+                    [self.golfBall.x + self.golfBall.radius / 2, self.golfBall.y + self.golfBall.radius / 2,
+                     constants.MEDIUM_CIRCLE]
+                ))
+                self.origAnim = (
+                    self.golfBall.x + self.golfBall.radius / 2,
+                    self.golfBall.y + self.golfBall.radius / 2
+                )
 
         self.line = [(int(self.golfBall.x + self.golfBall.radius), int(self.golfBall.y + self.golfBall.radius)),pygame.mouse.get_pos()]
         self.redrawWindow(win)

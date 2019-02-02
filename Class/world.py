@@ -14,6 +14,7 @@ class World:
         self.screenW = screenWidth
         self.pixels = [[1] * screenHeight for i in range(screenWidth)]
         self.lastAngle = 0
+        self.font = pygame.font.SysFont("monospace", 20)
 
     def generatePixel(self):
         self.backgroundMask = pygame.transform.scale(pygame.image.load(self.backgroundMaskImgPath).convert(), (self.screenW, self.screenH))
@@ -56,6 +57,9 @@ class World:
         screen.blit(self.backgroundSky, (0, 0))
         screen.blit(self.backgroundGround, (0, 0))
         screen.blit(self.backgroundArrow, self.rect)
+        text = self.getWind()
+        label = self.font.render("x : "+str(text[0])+" y : "+ str(text[1]), 1, (0, 0, 0))
+        screen.blit(label, (self.screenW-175, 175))
 
     def destroyCircleArea(self, xSrc, ySrc, constArea):
         xSrc = int(xSrc)
@@ -63,7 +67,7 @@ class World:
         pygame.draw.circle(self.backgroundGround, (0, 0, 0, 0), (xSrc, ySrc), constArea)
         pygame.draw.circle(self.backgroundMask, (0, 0, 0, 255), (xSrc, ySrc), constArea)
         self.fastRegeneratePixel(xSrc, ySrc, constArea)
-
+        
     def destroyLine(self, xSrc, ySrc, constArea):
         xSrc = int(xSrc)
         ySrc = int(ySrc)

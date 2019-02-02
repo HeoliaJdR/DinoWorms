@@ -123,6 +123,10 @@ while wait:
             if event.key == pygame.K_2:
                 proj.changeProjectile(2)
                 proj.initProjectile()
+            if event.key == pygame.K_9:
+                proj.enableTrajectory()
+            if event.key == pygame.K_0:
+                proj.cleanTrajectory()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             proj.enableLoading()
