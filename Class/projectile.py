@@ -22,6 +22,8 @@ class projectile(object):
         self.loadup = True
         self.trajectory=[]
         self.drawTrajectories=False
+        self.font = pygame.font.SysFont("comicsansms", 20)
+        self.inDisplay = True
 
         """ Ajout des animations"""
         self.launchAnim = False
@@ -40,8 +42,8 @@ class projectile(object):
     def redrawWindow(self,win):
         #win.fill((64, 64, 64))
         if not self.shoot:
-            self.golfBall.x = 1000
-            self.golfBall.y = 600
+            self.golfBall.x = 100
+            self.golfBall.y = 100
         if not self.shoot:
             pygame.draw.line(win, (0, 0, 0), self.line[0], self.line[1])
             pygame.draw.rect(win, (0, 0, 0), (0, 0, 100, 10), 1)
@@ -183,11 +185,14 @@ class projectile(object):
             for i in range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1):
                 for j in range(self.golfBall.y,self.golfBall.y + self.golfBall.radius-1):
                     if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
-                        self.shoot = False
+                        """self.shoot = False
                         self.power = 0
                         self.time = 0
                         self.totaltime = 0
-                        return 0
+                        return 0"""
+                        self.inDisplay = False
+                        break;
+                    else: self.inDisplay = True
                     if area[i][j]==1 :
                         self.go = False
                         self.touchingPoint = (i,j)
@@ -248,9 +253,7 @@ class projectile(object):
                             if normale == constants.BOTRIGHT: self.angle = (self.angle + math.pi/2)*0.9
                         elif self.angle<3*math.pi/2:
                             if normale == constants.TOP: self.angle = (self.angle - math.pi/2) * 1.1
-                            if normale == constants.RIGHT:
-                                self.angle = (self.angle + math.pi / 2) * 0.9
-                                print("ui")
+                            if normale == constants.RIGHT: self.angle = (self.angle + math.pi / 2) * 0.9
                             if normale == constants.TOPLEFT: self.angle = (self.angle - math.pi / 2) * 1.2
                             if normale == constants.TOPRIGHT: self.angle = (self.angle - math.pi) * 1.1
                         else:
@@ -295,6 +298,15 @@ class projectile(object):
                     self.golfBall.x + self.golfBall.radius / 2,
                     self.golfBall.y + self.golfBall.radius / 2
                 )
+        if self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 1000:
+            label = self.font.render("3", 1, (255, 0, 0))
+            win.blit(label, (self.golfBall.x - 10, self.golfBall.y - 10))
+        elif self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 2000:
+            label = self.font.render("2", 1, (255, 0, 0))
+            win.blit(label, (self.golfBall.x - 10, self.golfBall.y - 10))
+        elif self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 3000:
+            label = self.font.render("1", 1, (255, 0, 0))
+            win.blit(label, (self.golfBall.x - 10, self.golfBall.y - 10))
 
         self.line = [(int(self.golfBall.x + self.golfBall.radius), int(self.golfBall.y + self.golfBall.radius)),pygame.mouse.get_pos()]
         self.redrawWindow(win)
@@ -328,4 +340,8 @@ class projectile(object):
                     self.angle = self.findAngle(pos)
                     self.loading = 0
                     #print(self.power)"""
-        self.printProjectile(win)
+        if self.inDisplay:
+            self.printProjectile(win)
+        elif self.type == 2 and pygame.time.get_ticks() - self.totaltime >= 3000:
+            self.resetBall()
+
