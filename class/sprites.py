@@ -1,9 +1,9 @@
 
 
 class Sprites:
-    testBaseSprite = "Imgs/soloDino.png"
-    size_x = 85
-    size_y = 77
+    testBaseSprite = "Imgs/dinoGreen.png"
+    size_x = 680
+    size_y = 630
     standingSprites = {
         0: (0*size_x, 0*size_y, size_x, size_y),
         1: (1*size_x, 0*size_y, size_x, size_y)

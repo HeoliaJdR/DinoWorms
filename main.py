@@ -19,10 +19,12 @@ def initGame():
     proj = projectile.projectile(2)
     proj.initProjectile()
 
-    player = characters.Characters(100)
+    player = characters.Characters(100, 0, 50, 350, True)
+    player2 = characters.Characters(100, 0, 150, 350, False)
     player.initCharacter()
+    player2.initCharacter()
 
-    return newWorld, proj, player
+    return newWorld, proj, player, player2
 
 # Adapt to the monitor size
 rootSystem = tk.Tk()
@@ -68,7 +70,7 @@ while wait:
         if menuAction == constants.ACTION_PLAY:
             inMenu = False
             leavingMenu = True
-            newWorld, proj, player = initGame()
+            newWorld, proj, player, player2 = initGame()
         elif menuAction == constants.ACTION_CONTINUE:
             inMenu = False
             leavingMenu = True
@@ -79,7 +81,9 @@ while wait:
         continue
 
     newWorld.printBackground(screen)
-    player.displayCharacter(screen)
+    player.displayCharacter(screen, newWorld.getPixels())
+    player2.displayCharacter(screen, newWorld.getPixels())
+
 
     if changeWind:
         newWorld.generateWind()
@@ -127,6 +131,10 @@ while wait:
                 proj.enableTrajectory()
             if event.key == pygame.K_0:
                 proj.cleanTrajectory()
+            if event.key == pygame.K_d:
+                player.moveCharacter(screen, pygame.K_d)
+            if event.key == pygame.K_a:
+                player.moveCharacter(screen, pygame.K_a)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             proj.enableLoading()
