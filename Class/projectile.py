@@ -104,6 +104,11 @@ class projectile(object):
                     point2 = (j, i)
                     break;
         if point1 == point2:"""
+        if self.touchingPoint[0] - range < 0: return constants.RIGHT
+        elif self.touchingPoint[0] + range > len(area)-1: return  constants.LEFT
+        elif self.touchingPoint[1] - range < 0: return constants.TOP
+        elif self.touchingPoint[1] + range > len(area)-1: return constants.BOT
+
         points = (#area[int(self.touchingPoint[0] - (self.golfBall.radius - 1)/2)][int(self.touchingPoint[1] - (self.golfBall.radius - 1)/2)],
                   area[int(self.touchingPoint[0] - range)][int(self.touchingPoint[1] - range)],
                   #area[self.touchingPoint[0]-1][self.touchingPoint[1]],
