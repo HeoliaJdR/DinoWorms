@@ -41,14 +41,16 @@ class Characters:
 
     def moveCharacter(self):
         if self.wantsToWalkRight:
-            if self.direction == 0:
-                # self.player = pygame.transform.flip(self.player, True, True)
-                self.direction = 1
+            if self.direction == 1:
+                self.animWalk.flipAnimation()
+                self.animIdle.flipAnimation()
+                self.direction = 0
             self.x += 4
             self.origAnim = (self.x, self.y)
         if self.wantsToWalkLeft:
-            if self.direction == 1:
-                # self.player = pygame.transform.flip(self.player, True, True)
-                self.direction = 0
+            if self.direction == 0:
+                self.animWalk.flipAnimation()
+                self.animIdle.flipAnimation()
+                self.direction = 1
             self.x -= 4
             self.origAnim = (self.x, self.y)

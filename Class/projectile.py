@@ -42,8 +42,8 @@ class projectile(object):
     def redrawWindow(self, win):
         if not self.shoot:
             pygame.draw.line(win, (0, 0, 0), self.line[0], self.line[1])
-            pygame.draw.rect(win, (0, 0, 0), (self.golfBall.x, self.golfBall.y, 100, 10), 1)
-            pygame.draw.rect(win,(255,0,0),(self.golfBall.x, self.golfBall.y, self.power,10),0)
+            pygame.draw.rect(win, (0, 0, 0), (self.golfBall.x - 50, self.golfBall.y + 50, 100, 10), 1)
+            pygame.draw.rect(win,(255,0,0),(self.golfBall.x - 50, self.golfBall.y + 50, self.power,10),0)
 
         for point in self.trajectory:
             pygame.draw.rect(win, (0, 0, 0), (point[0], point[1], 3, 3), 0)

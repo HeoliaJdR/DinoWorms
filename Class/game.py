@@ -43,7 +43,7 @@ class Game:
             player.displayCharacter(screen, area)
 
             if i == self.activePlayer and not self.proj.shoot:
-                self.proj.golfBall.changeOrig((player.x + 75, player.y))
+                self.proj.golfBall.changeOrig((player.x, player.y))
 
         if needEndOfTurn:
             self.endOfTurn()
@@ -90,4 +90,4 @@ class Game:
 
         player = self.players[self.activePlayer]
 
-        self.proj.golfBall.changeOrig((player.x + 75, player.y))
+        self.proj.golfBall.changeOrig((player.x, player.y))

@@ -18,6 +18,7 @@ class Animation:
         self.currentTicks = 0
         self.delayBetweenFrame = delayBetweenFrame
         self.currentFrame = 1
+        self.flip = 0
 
     def extraParameter(self, **kwargs):
         try:
@@ -63,10 +64,23 @@ class Animation:
             except Exception:
                 pass
 
-            self.currentRect = (self.firstRect[0] + (self.sizeRect[0] * self.frame), self.firstRect[1] + (self.sizeRect[1] * self.line), self.sizeRect[0], self.sizeRect[1])
+            if self.flip:
+                self.currentRect =  self.reverseRect()
+            else:
+                self.currentRect = (self.firstRect[0] + (self.sizeRect[0] * self.frame), self.firstRect[1] + (self.sizeRect[1] * self.line), self.sizeRect[0], self.sizeRect[1])
+
             self.frame += 1
             self.currentFrame += 1
 
         orig = (orig[0] - (self.sizeRect[0]/2), orig[1] - (self.sizeRect[1]/2))
         screen.blit(self.spriteSheet, orig, self.currentRect)
         return True
+
+    def flipAnimation(self):
+        self.spriteSheet = pygame.transform.flip(self.spriteSheet, True, False)
+        self.flip = 0 if self.flip else 1
+
+    def reverseRect(self):
+        copyFirstRect = (self.firstRect[0] + (self.sizeRect[0] * (self.numberFramesPerLine - self.frame - 1)), self.firstRect[1] + (self.sizeRect[1] * self.line))
+        currentRect = (copyFirstRect[0], copyFirstRect[1], self.sizeRect[0], self.sizeRect[1])
+        return currentRect
