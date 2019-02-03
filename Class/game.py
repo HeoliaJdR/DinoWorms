@@ -38,7 +38,12 @@ class Game:
         needEndOfTurn = not self.proj.launchBall(screen, area, self.world)
 
         for i in range(self.nbPlayers):
-            self.players[i].displayCharacter(screen, area)
+            player = self.players[i]
+            player.moveCharacter()
+            player.displayCharacter(screen, area)
+
+            if i == self.activePlayer and not self.proj.shoot:
+                self.proj.golfBall.changeOrig((player.x + 75, player.y))
 
         if needEndOfTurn:
             self.endOfTurn()
@@ -59,16 +64,16 @@ class Game:
                 self.endOfTurn()
 
             if event.key == pygame.K_d:
-                walkingRigth = True
+                self.players[self.activePlayer].wantsToWalkRight = True
                 self.players[self.activePlayer].animConstant = constants.WALK
             if event.key == pygame.K_a:
-                walkingLeft = True
+                self.players[self.activePlayer].wantsToWalkLeft = True
                 self.players[self.activePlayer].animConstant = constants.WALK
 
         if event.type == pygame.KEYUP:
+            self.players[self.activePlayer].wantsToWalkRight = False
+            self.players[self.activePlayer].wantsToWalkLeft = False
             self.players[self.activePlayer].animConstant = constants.IDLE
-            walkingRigth = False
-            walkingLeft = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.proj.enableLoading()
         if event.type == pygame.MOUSEBUTTONUP:
@@ -78,8 +83,11 @@ class Game:
         self.world.generateWind()
         self.timer = 0
         self.players[self.activePlayer].animConstant = constants.IDLE
+        self.players[self.activePlayer].wantsToWalkLeft = False
+        self.players[self.activePlayer].wantsToWalkRight = False
         self.activePlayer += 1
         self.activePlayer = 0 if self.activePlayer >= self.nbPlayers else self.activePlayer
+
         player = self.players[self.activePlayer]
 
         self.proj.golfBall.changeOrig((player.x + 75, player.y))

@@ -65,8 +65,6 @@ class projectile(object):
             self.angle = math.pi + abs(self.angle)
         elif pos[1] > sY and pos[0] > sX:
             self.angle = (math.pi * 2) - self.angle
-        """print(self.angle)
-        print(pos[0],pos[1])"""
         return self.angle
 
     def enableLoading(self):
@@ -151,9 +149,7 @@ class projectile(object):
 
         if self.shoot:
             for i in range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1):
-                print(" X :" + str(range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1)))
                 for j in range(self.golfBall.y,self.golfBall.y + self.golfBall.radius-1):
-                    print(" Y :" + str(range(self.golfBall.y,self.golfBall.y + self.golfBall.radius-1)))
                     if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
                         self.inDisplay = False
                         break
