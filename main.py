@@ -81,9 +81,8 @@ while wait:
         continue
 
     newWorld.printBackground(screen)
-    player.displayCharacter(screen, newWorld.getPixels())
-    player2.displayCharacter(screen, newWorld.getPixels())
-
+    player.displayCharacter(screen)
+    player2.displayCharacter(screen)
 
     if changeWind:
         newWorld.generateWind()
@@ -132,9 +131,9 @@ while wait:
             if event.key == pygame.K_0:
                 proj.cleanTrajectory()
             if event.key == pygame.K_d:
-                player.moveCharacter(screen, pygame.K_d)
+                player.moveCharacter(screen, pygame.K_d, newWorld, newWorld.getPixels())
             if event.key == pygame.K_a:
-                player.moveCharacter(screen, pygame.K_a)
+                player.moveCharacter(screen, pygame.K_a, newWorld, newWorld.getPixels())
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             proj.enableLoading()

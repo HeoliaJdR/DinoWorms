@@ -183,7 +183,9 @@ class projectile(object):
 
         if self.shoot:
             for i in range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1):
+                print(" X :" + str(range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1)))
                 for j in range(self.golfBall.y,self.golfBall.y + self.golfBall.radius-1):
+                    print(" Y :" + str(range(self.golfBall.y,self.golfBall.y + self.golfBall.radius-1)))
                     if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
                         """self.shoot = False
                         self.power = 0
@@ -191,7 +193,7 @@ class projectile(object):
                         self.totaltime = 0
                         return 0"""
                         self.inDisplay = False
-                        break;
+                        break
                     else: self.inDisplay = True
                     if area[i][j]==1 :
                         self.go = False
