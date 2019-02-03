@@ -11,6 +11,7 @@ class Menu:
         self.menuFont = pygame.font.Font("Fonts/Quantify.ttf", 36)
         self.size = winSize
         self.constMenu = constants.MAIN_MENU
+        self.nbDino = 1
 
     def eventMenu(self):
         for event in pygame.event.get():
@@ -21,7 +22,7 @@ class Menu:
                 mousePos = pygame.mouse.get_pos()
                 if self.constMenu == constants.MAIN_MENU:
                     if mousePos[0] > self.size[0]/4 and mousePos[0] < self.size[0]/3 and mousePos[1] > 300 and mousePos[1] < 400:
-                        return constants.ACTION_PLAY
+                        return constants.ACTION_CHOOSE_PLAYER
                     elif mousePos[0] > self.size[0]/4 and mousePos[0] < self.size[0]/3 and mousePos[1] > 400 and mousePos[1] < 500:
                         return constants.ACTION_LEAVE
                 elif self.constMenu == constants.PAUSE_MENU:
@@ -33,6 +34,15 @@ class Menu:
                         return constants.ACTION_BACK_TO_MENU
                     elif mousePos[0] > self.size[0]/4 and mousePos[0] < self.size[0]/3 and mousePos[1] >= 400 and mousePos[1] < 500:
                         return constants.ACTION_LEAVE
+                elif self.constMenu == constants.PLAYER_MENU:
+                    if mousePos[0] > self.size[0]/4 - 100 and mousePos[0] < self.size[0]/4 - 25 and mousePos[1] >= 200 and mousePos[1] < 300:
+                        self.nbDino = 1 if self.nbDino - 1 < 1 else self.nbDino - 1
+                    elif mousePos[0] > self.size[0] / 4 + 40 and mousePos[0] < self.size[0] / 4 + 140 and mousePos[1] >= 200 and mousePos[1] < 300:
+                        self.nbDino = 3 if self.nbDino + 1 > 3 else self.nbDino + 1
+                    elif mousePos[0] > self.size[0]/4 - 125 and mousePos[0] < self.size[0]/3 - 125 and mousePos[1] >= 350 and mousePos[1] < 450:
+                        return constants.ACTION_PLAY
+                    elif mousePos[0] > self.size[0]/4 - 125 and mousePos[0] < self.size[0]/3 - 125 and mousePos[1] >= 450 and mousePos[1] < 550:
+                        return constants.ACTION_BACK_TO_MENU
 
             if event.type == pygame.QUIT:
                 return constants.ACTION_LEAVE
@@ -47,6 +57,8 @@ class Menu:
             self.printMainMenu(screen)
         elif self.constMenu == constants.PAUSE_MENU:
             self.printPauseMenu(screen)
+        elif self.constMenu == constants.PLAYER_MENU:
+            self.printPlayMenu(screen)
 
     def printMainMenu(self, screen):
         mainMenu = self.bigFont.render("Bienvenue dans DinoWorms !", True, (255,0,0,255))
@@ -56,6 +68,21 @@ class Menu:
         screen.blit(mainMenu, (self.size[0]/5, 100))
         screen.blit(playButton, (self.size[0] / 4, 300))
         screen.blit(leaveButton, (self.size[0] / 4, 400))
+
+    def printPlayMenu(self, screen):
+        dino = self.bigFont.render("Combien de dino par équipe ?", False, (255, 0, 0, 255))
+        playButton = self.menuFont.render("Jouer", False, (255,0,0,255))
+        backButton = self.menuFont.render("Retourner au menu", False, (255, 0, 0, 255))
+        nbPlayer = self.bigFont.render(str(self.nbDino), False, (255, 0, 0, 255))
+        leftArrow = pygame.transform.scale(pygame.image.load("Imgs/left_arrow.png"), (100,100))
+        rigthArrow = pygame.transform.scale(pygame.image.load("Imgs/right_arrow.png"), (100,100))
+
+        screen.blit(dino, (self.size[0] / 5, 100))
+        screen.blit(leftArrow, (self.size[0] / 4 - 125, 200))
+        screen.blit(nbPlayer, (self.size[0] / 4, 225))
+        screen.blit(rigthArrow, (self.size[0] / 4 + 40, 200))
+        screen.blit(playButton, (self.size[0] / 4 - 125, 350))
+        screen.blit(backButton, (self.size[0] / 4 - 125, 450))
 
     def printPauseMenu(self, screen):
         continueMenu = self.menuFont.render("Reprendre", False, (255, 0, 0, 255))

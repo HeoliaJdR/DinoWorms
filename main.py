@@ -1,30 +1,8 @@
 import pygame
-from pygame.locals import *
 import constants
 import tkinter as tk
-from Class import characters
-from Class import world
-from Class import projectile
+from Class import game
 from Class import menu
-from Class import sprites
-from Class import animation
-
-def initGame():
-    # Start World
-    newWorld = world.World(screenHeight - 200, screenWith - 200)
-    newWorld.initBackground()
-    newWorld.generateWind()
-
-    # init projectile(test)
-    proj = projectile.projectile(2)
-    proj.initProjectile()
-
-    player = characters.Characters(100, 0, 50, 350, True)
-    player2 = characters.Characters(100, 0, 150, 350, False)
-    player.initCharacter()
-    player2.initCharacter()
-
-    return newWorld, proj, player, player2
 
 # Adapt to the monitor size
 rootSystem = tk.Tk()
@@ -40,37 +18,21 @@ screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.
 # Init Menu
 mainMenu = menu.Menu((screenWith, screenHeight))
 
-"""
-#Start Pygame
-pygame.display.init()
-screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT), pygame.FULLSCREEN)
-
-characters.displayDinosaurs(screen)
-
->>>>>>> [+] Characters + Sprite (Not Working Yet)
-"""
-pygame.display.flip()
-
 wait = True
-mouseIsDown = False
-changeWind = False
 isFullScreen = False
-
 inMenu = True
 leavingMenu = False
 
 while wait:
-
     if inMenu:
         leavingMenu = False
         mainMenu.chooseMenu(screen)
         menuAction = mainMenu.eventMenu()
-        pygame.display.update()
 
         if menuAction == constants.ACTION_PLAY:
             inMenu = False
             leavingMenu = True
-            newWorld, proj, player, player2 = initGame()
+            newGame = game.Game(mainMenu.nbDino * 2, (screenWith - 200, screenHeight - 200))
         elif menuAction == constants.ACTION_CONTINUE:
             inMenu = False
             leavingMenu = True
@@ -78,72 +40,43 @@ while wait:
             mainMenu.constMenu = constants.MAIN_MENU
         elif menuAction == constants.ACTION_LEAVE:
             wait = False
-        continue
+        elif menuAction == constants.ACTION_CHOOSE_PLAYER:
+            mainMenu.constMenu = constants.PLAYER_MENU
+    else:
+        for event in pygame.event.get():
+            if leavingMenu:
+                leavingMenu = False
+                break
 
-    newWorld.printBackground(screen)
-    player.displayCharacter(screen)
-    player2.displayCharacter(screen)
+            newGame.gameEvent(event)
 
-    if changeWind:
-        newWorld.generateWind()
-        changeWind = False
-    if newWorld.needChangeArrow:
-        newWorld.animWindArrow()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    inMenu = True
+                    mainMenu.constMenu = constants.PAUSE_MENU
+                # if event.key == pygame.K_f:
+                #     if isFullScreen:
+                #         isFullScreen = False
+                #         tempScreen = pygame.transform.scale(screen.convert(), (screenWith - 200, screenHeight - 200))
+                #         pygame.display.quit()
+                #         pygame.display.init()
+                #         screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.RESIZABLE)
+                #         screen.blit(tempScreen, (0, 0))
+                #     else:
+                #         isFullScreen = True
+                #         tempScreen = pygame.transform.scale(screen.convert(), (screenWith, screenHeight))
+                #         pygame.display.quit()
+                #         pygame.display.init()
+                #         screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+                #         screen.blit(tempScreen, (0, 0))
+                #     pygame.display.flip()
+                if event.key == pygame.K_h:
+                    changeWind = True
 
-    proj.launchBall(screen, newWorld.getPixels(), newWorld)
+            if event.type == pygame.QUIT:
+                wait = False
+        newGame.printElements(screen)
     pygame.display.update()
-
-    for event in pygame.event.get():
-        if leavingMenu:
-            leavingMenu = False
-            break
-
-        if (event.type == pygame.KEYDOWN):
-            if event.key == pygame.K_ESCAPE:
-                inMenu = True
-                mainMenu.constMenu = constants.PAUSE_MENU
-            if event.key == pygame.K_f:
-                if isFullScreen:
-                    isFullScreen = False
-                    tempScreen = pygame.transform.scale(screen.convert(), (screenWith - 200, screenHeight - 200))
-                    pygame.display.quit()
-                    pygame.display.init()
-                    screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.RESIZABLE)
-                    screen.blit(tempScreen, (0, 0))
-                else:
-                    isFullScreen = True
-                    tempScreen = pygame.transform.scale(screen.convert(), (screenWith, screenHeight))
-                    pygame.display.quit()
-                    pygame.display.init()
-                    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-                    screen.blit(tempScreen, (0, 0))
-                pygame.display.flip()
-            if event.key == pygame.K_h:
-                changeWind = True
-            if event.key == pygame.K_1:
-                proj.changeProjectile(1)
-                proj.initProjectile()
-            if event.key == pygame.K_2:
-                proj.changeProjectile(2)
-                proj.initProjectile()
-            if event.key == pygame.K_9:
-                proj.enableTrajectory()
-            if event.key == pygame.K_0:
-                proj.cleanTrajectory()
-            if event.key == pygame.K_d:
-                player.moveCharacter(screen, pygame.K_d, newWorld, newWorld.getPixels())
-            if event.key == pygame.K_a:
-                player.moveCharacter(screen, pygame.K_a, newWorld, newWorld.getPixels())
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            proj.enableLoading()
-        if event.type == pygame.MOUSEBUTTONUP:
-            proj.releaseProjectile()
-
-        if event.type == pygame.QUIT:
-            wait = False
-
     pygame.time.delay(int(1000 / constants.FRAME_PER_SECOND))
-    pygame.display.update()
 
 pygame.quit()

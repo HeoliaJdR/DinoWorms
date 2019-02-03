@@ -27,3 +27,7 @@ class ball(object):
         newy = round(starty - distY)
 
         return (int(newx), int(newy), velx*time, vely)
+
+    def changeOrig(self, orig):
+        self.x = orig[0]
+        self.y = orig[1]
