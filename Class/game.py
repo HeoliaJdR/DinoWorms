@@ -25,7 +25,8 @@ class Game:
         xOrig = 200
         yOrig = 350
         for i in range (self.nbPlayers):
-            self.players[i] = characters.Characters(100, 0, xOrig, yOrig, True)
+            self.players[i] = characters.Characters(100, 0, xOrig, yOrig, True, "Joueur_" + str(i+1))
+            self.players[i].updateYPos(self.world, self.world.getPixels())
             xOrig += 200
 
     def printElements(self, screen):
@@ -38,9 +39,11 @@ class Game:
         needEndOfTurn = not self.proj.launchBall(screen, area, self.world)
 
         for i in range(self.nbPlayers):
+            print("Nom : " + self.players[i].name)
             player = self.players[i]
             player.moveCharacter(self.world, area)
-            player.displayCharacter(screen, area)
+            player.displayCharacter(screen, area, self.world)
+            self.players[i].updateYPos(self.world, self.world.getPixels())
 
             if i == self.activePlayer and not self.proj.shoot:
                 self.proj.golfBall.changeOrig((player.x, player.y))
