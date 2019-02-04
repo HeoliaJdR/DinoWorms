@@ -39,7 +39,7 @@ class Game:
 
         for i in range(self.nbPlayers):
             player = self.players[i]
-            player.moveCharacter()
+            player.moveCharacter(self.world, area)
             player.displayCharacter(screen, area)
 
             if i == self.activePlayer and not self.proj.shoot:
@@ -69,6 +69,11 @@ class Game:
             if event.key == pygame.K_a:
                 self.players[self.activePlayer].wantsToWalkLeft = True
                 self.players[self.activePlayer].animConstant = constants.WALK
+
+            if event.key == pygame.K_BACKSPACE:
+                self.players[self.activePlayer].displayBoxes = 1
+            if event.key == pygame.K_TAB:
+                self.players[self.activePlayer].displayBoxes = 0
 
         if event.type == pygame.KEYUP:
             self.players[self.activePlayer].wantsToWalkRight = False
