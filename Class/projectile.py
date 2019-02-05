@@ -126,7 +126,7 @@ class projectile(object):
         self.shoot = False
         self.power = 0
         self.time = 0
-        self.totaltime = 0
+        self.totaltime = pygame.time.get_ticks()
 
     def changeProjectile(self, projType):
         if not self.shoot:
@@ -149,7 +149,7 @@ class projectile(object):
 
         if self.shoot:
             for i in range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1):
-                for j in range(self.golfBall.y,self.golfBall.y + self.golfBall.radius-1):
+                for j in range(int(self.golfBall.y),int(self.golfBall.y + self.golfBall.radius-1)):
                     if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
                         self.inDisplay = False
                         break
@@ -266,7 +266,8 @@ class projectile(object):
 
         if self.inDisplay:
             self.printProjectile(win)
-        elif self.type == 2 and pygame.time.get_ticks() - self.totaltime >= 3000:
+        elif self.shoot and self.type == 2 and pygame.time.get_ticks() - self.totaltime >= 3000:
             self.resetBall()
+            return False
 
         return True

@@ -60,7 +60,7 @@ class Characters:
 
     def updateYPos(self, world, area):
         self.isCollided(world, area, "Feet")
-        print(self.canGoDown)
+        #print(self.canGoDown)
         if self.canGoDown == 1:
             self.y += constants.GRAVITY
             self.origAnim = (self.x, self.y)
@@ -140,13 +140,13 @@ class Characters:
                     self.collideRect[place] = 1
                     if place == "Feet":
                         self.canGoDown = 0
-                    print("STouché " + place)
+                    #print("STouché " + place)
                     break
                 if area[i][j] == 1:
                     self.collideRect[place] = 1
                     if place == "Feet":
                         self.canGoDown = 0
-                    print("Touché " + place)
+                    #print("Touché " + place)
                     break
                 else:
                     self.collideRect[place] = 0

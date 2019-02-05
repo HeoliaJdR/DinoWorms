@@ -39,7 +39,7 @@ class Game:
         needEndOfTurn = not self.proj.launchBall(screen, area, self.world)
 
         for i in range(self.nbPlayers):
-            print("Nom : " + self.players[i].name)
+            #print("Nom : " + self.players[i].name)
             player = self.players[i]
             player.moveCharacter(self.world, area)
             player.displayCharacter(screen, area, self.world)
