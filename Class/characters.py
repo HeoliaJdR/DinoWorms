@@ -26,6 +26,7 @@ class Characters:
         self.name = name
         self.canGoDown = 1
         self.displayBoxes = 1
+        self.isJumping = False
         #self.player = None
         #self.spriteSheet = "Imgs/dinoGreen.png"
         self.animConstant = constants.IDLE
@@ -58,13 +59,23 @@ class Characters:
         pygame.draw.rect(screen, (255, 0, 0), self.rect["Feet"])
         pygame.draw.rect(screen, (0, 255, 0), self.rect["Tail"])
 
+    def jumpCharacter(self):
+        self.isJumping = True
+        self.y -= 70
+        self.canGoDown = 1
+
+
     def updateYPos(self, world, area):
         self.isCollided(world, area, "Feet")
-        #print(self.canGoDown)
+        #if self.name == "Joueur_2":
+            #print(self.y, self.collideRect, self.canGoDown)
+            #print(area[self.x][self.y])
+            #print(self.rect)
+
         if self.canGoDown == 1:
             self.y += constants.GRAVITY
-            self.origAnim = (self.x, self.y)
         self.updateCollideBoxes()
+        self.origAnim = (self.x, self.y)
 
     def updateCollideBoxes(self):
         self.rect = {
@@ -106,10 +117,10 @@ class Characters:
             self.isCollided(world, area, "TopR")
             self.isCollided(world, area, "BotR")
             self.isCollided(world, area, "Head")
+            if self.collideRect["Head"] == 1: return
             if self.collideRect["TopR"] == 1: return
             if self.collideRect["BotR"] == 1: return
-            if self.collideRect["Tail"] == 1: return
-            if self.collideRect["Head"] == 1: return
+
             self.x += 4
             self.origAnim = (self.x, self.y)
             for key in self.collideRect:
@@ -121,10 +132,11 @@ class Characters:
             self.isCollided(world, area, "TopL")
             self.isCollided(world, area, "BotL")
             self.isCollided(world, area, "Tail")
+            self.isCollided(world, area, "Head")
+            if self.collideRect["Head"] == 1: return
             if self.collideRect["TopL"] == 1: return
             if self.collideRect["BotL"] == 1: return
             if self.collideRect["Tail"] == 1: return
-            if self.collideRect["Head"] == 1: return
             self.x -= 4
             self.origAnim = (self.x, self.y)
             for key in self.collideRect:
@@ -132,6 +144,7 @@ class Characters:
                     #print(key)
                     self.collideRect[key] = 0
         self.updateCollideBoxes()
+
 
     def isCollided(self, newWorld, area, place):
         for i in self.rect[place]:
@@ -142,11 +155,11 @@ class Characters:
                         self.canGoDown = 0
                     #print("STouché " + place)
                     break
-                if area[i][j] == 1:
+                if area[j][i] == 1:
                     self.collideRect[place] = 1
                     if place == "Feet":
                         self.canGoDown = 0
-                    #print("Touché " + place)
+                    #print("Touché " + str(i), str(j))
                     break
                 else:
                     self.collideRect[place] = 0

@@ -26,7 +26,7 @@ class Game:
         yOrig = 350
         for i in range (self.nbPlayers):
             self.players[i] = characters.Characters(100, 0, xOrig, yOrig, True, "Joueur_" + str(i+1))
-            self.players[i].updateYPos(self.world, self.world.getPixels())
+            #self.players[i].updateYPos(self.world, self.world.getPixels())
             xOrig += 200
 
     def printElements(self, screen):
@@ -43,7 +43,7 @@ class Game:
             player = self.players[i]
             player.moveCharacter(self.world, area)
             player.displayCharacter(screen, area, self.world)
-            self.players[i].updateYPos(self.world, self.world.getPixels())
+            player.updateYPos(self.world, area)
 
             if i == self.activePlayer and not self.proj.shoot:
                 self.proj.golfBall.changeOrig((player.x, player.y))
@@ -65,7 +65,8 @@ class Game:
                 self.proj.cleanTrajectory()
             if event.key == pygame.K_c:
                 self.endOfTurn()
-
+            if event.key == pygame.K_SPACE:
+                self.players[self.activePlayer].jumpCharacter()
             if event.key == pygame.K_d:
                 self.players[self.activePlayer].wantsToWalkRight = True
                 self.players[self.activePlayer].animConstant = constants.WALK
@@ -96,6 +97,6 @@ class Game:
         self.activePlayer += 1
         self.activePlayer = 0 if self.activePlayer >= self.nbPlayers else self.activePlayer
 
-        player = self.players[self.activePlayer]
+        current_player = self.players[self.activePlayer]
 
-        self.proj.golfBall.changeOrig((player.x, player.y))
+        self.proj.golfBall.changeOrig((current_player.x, current_player.y))
