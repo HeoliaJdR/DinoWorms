@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import constants
+import math
 from Class import sprites
 from Class import animation
 
@@ -66,8 +67,11 @@ class Characters:
 
     def jumpCharacter(self):
         self.isJumping = True
-        self.y -= 70
-        self.canGoDown = 1
+        startY = self.y
+        vely = math.sin(90) * 70
+        distY = (vely * 2) + ((-4.9 * (2 ** 2)) / 2)
+        newy = round(startY - distY)
+        return newy
 
 
     def updateYPos(self, world, area):
