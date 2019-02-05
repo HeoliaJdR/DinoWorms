@@ -42,6 +42,11 @@ class Characters:
             "Tail": Rect(self.x - 40, self.y, 15, 15)
         }
 
+        self.allRect = self.rect["Tail"]
+        for rect in self.rect.values():
+            self.allRect = self.allRect.union(rect)
+        self.size = (100 + constants.MEDIUM_CIRCLE, 63 + constants.MEDIUM_CIRCLE)
+
         """ Ajout des animations"""
         self.launchAnim = False
         self.animWalk = animation.Animation("Imgs/dinoGreenWalk.png", (680, 475), (0, 0), 10, 3, 4, 60, True)
@@ -67,11 +72,6 @@ class Characters:
 
     def updateYPos(self, world, area):
         self.isCollided(world, area, "Feet")
-        #if self.name == "Joueur_2":
-            #print(self.y, self.collideRect, self.canGoDown)
-            #print(area[self.x][self.y])
-            #print(self.rect)
-
         if self.canGoDown == 1:
             self.y += constants.GRAVITY
         self.updateCollideBoxes()
@@ -87,6 +87,9 @@ class Characters:
             "Feet": Rect(self.x - 25, self.y - (150 / 4) + 70, 50, 15),
             "Tail": Rect(self.x - 40, self.y, 15, 15)
         }
+        self.allRect = self.rect["Tail"]
+        for rect in self.rect.values():
+            self.allRect = self.allRect.union(rect)
 
     def displayCharacter(self, screen, area, world):
         if self.displayBoxes == 1:
@@ -153,15 +156,12 @@ class Characters:
                     self.collideRect[place] = 1
                     if place == "Feet":
                         self.canGoDown = 0
-                    #print("STouché " + place)
                     break
                 if area[j][i] == 1:
                     self.collideRect[place] = 1
                     if place == "Feet":
                         self.canGoDown = 0
-                    #print("Touché " + str(i), str(j))
                     break
                 else:
                     self.collideRect[place] = 0
-                    #print("Pas touché")
                     break

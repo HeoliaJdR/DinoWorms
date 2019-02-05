@@ -24,6 +24,7 @@ class projectile(object):
         self.drawTrajectories=False
         self.font = pygame.font.SysFont("comicsansms", 20)
         self.inDisplay = True
+        self.verifyCollision = False
 
         """ Ajout des animations"""
         self.launchAnim = False
@@ -138,8 +139,7 @@ class projectile(object):
     def cleanTrajectory(self):
         self.trajectory = []
 
-
-    def launchBall(self, win, area,newWorld):
+    def launchBall(self, win, area,newWorld, players):
         if self.drawTrajectories:
             self.trajectory.append((int(self.golfBall.x+self.golfBall.radius/2), int(self.golfBall.y+self.golfBall.radius/2)))
 
@@ -147,9 +147,13 @@ class projectile(object):
             self.launchAnim = self.anim.playAnim(win, self.origAnim)
             return self.launchAnim
 
+        if self.verifyCollision:
+            self.verifyCollision = False
+            self.collisionWithPlayer(players)
+
         if self.shoot:
             for i in range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1):
-                for j in range(int(self.golfBall.y),int(self.golfBall.y + self.golfBall.radius-1)):
+                for j in range(int(self.golfBall.y), int(self.golfBall.y + self.golfBall.radius-1)):
                     if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
                         self.inDisplay = False
                         break
@@ -158,11 +162,12 @@ class projectile(object):
                         self.go = False
                         self.touchingPoint = (i,j)
                         break
+            self.go = False if self.go == False else not self.collisionWithPlayer(players, True)
             if self.go:
-                    self.time += 0.15
-                    po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
-                    self.golfBall.x = po[0]
-                    self.golfBall.y = po[1]
+                self.time += 0.15
+                po = ball.ball.ballPath(self.x, self.y, self.power, self.angle, self.time, newWorld.getWind())
+                self.golfBall.x = po[0]
+                self.golfBall.y = po[1]
             else:
                 if self.type == 1:
                     #starting_x = self.x
@@ -216,6 +221,7 @@ class projectile(object):
                 elif self.type == 2:
                     self.resetBall()
                     self.launchAnim = True
+                    self.verifyCollision = True
                     self.anim.extraParameter(function=(
                         newWorld.destroyCircleArea,
                         3,
@@ -229,6 +235,7 @@ class projectile(object):
             if self.type == 1 and pygame.time.get_ticks() - self.totaltime >= 3000:
                 self.resetBall()
                 self.launchAnim = True
+                self.verifyCollision = True
                 self.anim.extraParameter(function=(
                     newWorld.destroyCircleArea,
                     3,
@@ -271,3 +278,23 @@ class projectile(object):
             return False
 
         return True
+
+    def collisionWithPlayer(self, players, verifyExplosion = False):
+        areaCircle = math.pow(constants.MEDIUM_CIRCLE, 2)
+        isCollision = False;
+        rectProj = pygame.Rect(self.golfBall.x, self.golfBall.y, self.golfBall.radius, self.golfBall.radius)
+
+        for player in players:
+            if verifyExplosion:
+                if rectProj.colliderect(player.allRect):
+                    isCollision = True
+            else:
+                if (math.pow((self.origAnim[0] - player.allRect.x), 2) < areaCircle or
+                    math.pow((self.origAnim[1] - player.allRect.y), 2) < areaCircle or
+                    math.pow((self.origAnim[0] - player.allRect.x + player.allRect.w), 2) < areaCircle or
+                    math.pow((self.origAnim[1] - player.allRect.y + player.allRect.h), 2) < areaCircle
+                ):
+                    isCollision = True
+                    player.hp -= 50
+
+        return isCollision

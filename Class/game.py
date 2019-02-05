@@ -36,17 +36,16 @@ class Game:
         if self.world.needChangeArrow:
             self.world.animWindArrow()
 
-        needEndOfTurn = not self.proj.launchBall(screen, area, self.world)
+        needEndOfTurn = not self.proj.launchBall(screen, area, self.world, self.players)
 
         for i in range(self.nbPlayers):
-            #print("Nom : " + self.players[i].name)
             player = self.players[i]
             player.moveCharacter(self.world, area)
             player.displayCharacter(screen, area, self.world)
             player.updateYPos(self.world, area)
 
             if i == self.activePlayer and not self.proj.shoot:
-                self.proj.golfBall.changeOrig((player.x, player.y))
+                self.proj.golfBall.changeOrig((player.x + player.allRect.w, player.y))
 
         if needEndOfTurn:
             self.endOfTurn()
@@ -99,4 +98,4 @@ class Game:
 
         current_player = self.players[self.activePlayer]
 
-        self.proj.golfBall.changeOrig((current_player.x, current_player.y))
+        self.proj.golfBall.changeOrig((current_player.x + current_player.allRect.w, current_player.y))
