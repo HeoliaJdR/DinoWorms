@@ -16,6 +16,8 @@ class Menu:
     def eventMenu(self):
         for event in pygame.event.get():
             if (event.type == pygame.KEYDOWN):
+                if self.constMenu == constants.VICTORY_MENU:
+                    return constants.ACTION_BACK_TO_MENU
                 if event.key == pygame.K_ESCAPE:
                     return False
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -43,6 +45,8 @@ class Menu:
                         return constants.ACTION_PLAY
                     elif mousePos[0] > self.size[0]/4 - 125 and mousePos[0] < self.size[0]/3 - 125 and mousePos[1] >= 450 and mousePos[1] < 550:
                         return constants.ACTION_BACK_TO_MENU
+                elif self.constMenu == constants.VICTORY_MENU:
+                    return constants.ACTION_BACK_TO_MENU
 
             if event.type == pygame.QUIT:
                 return constants.ACTION_LEAVE
@@ -51,7 +55,7 @@ class Menu:
     def printMenuBackGround(self, screen):
         screen.blit(self.menuBackground, (0, 0))
 
-    def chooseMenu(self, screen):
+    def chooseMenu(self, screen, team):
         self.printMenuBackGround(screen)
         if self.constMenu == constants.MAIN_MENU:
             self.printMainMenu(screen)
@@ -59,6 +63,8 @@ class Menu:
             self.printPauseMenu(screen)
         elif self.constMenu == constants.PLAYER_MENU:
             self.printPlayMenu(screen)
+        elif self.constMenu == constants.VICTORY_MENU:
+            self.printVictoryMenu(screen, team)
 
     def printMainMenu(self, screen):
         mainMenu = self.bigFont.render("Bienvenue dans DinoWorms !", True, (255,0,0,255))
@@ -94,3 +100,9 @@ class Menu:
         screen.blit(playButton, (self.size[0] / 4, 200))
         screen.blit(backButton, (self.size[0] / 4, 300))
         screen.blit(leaveButton, (self.size[0] / 4, 400))
+
+    def printVictoryMenu(self, screen, team):
+        victoryStr = "Victoire de la team : " + str(team)
+        victoryFont = self.bigFont.render(victoryStr, True, (255, 0, 0))
+
+        screen.blit(victoryFont, (self.size[0] / 2, self.size[1] / 2))

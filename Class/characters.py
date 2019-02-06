@@ -28,7 +28,7 @@ class Characters:
         }
         self.name = name
         self.canGoDown = 1
-        self.displayBoxes = 1
+        self.displayBoxes = 0
         self.isJumping = False
         #self.player = None
         #self.spriteSheet = "Imgs/dinoGreen.png"
@@ -45,11 +45,12 @@ class Characters:
             "FeetR": Rect(self.x + 35, self.y - (150 / 4) + 70, 50, 15),
             "Tail": Rect(self.x - 40, self.y, 15, 15)
         }
-
         self.allRect = self.rect["Tail"]
         for rect in self.rect.values():
             self.allRect = self.allRect.union(rect)
         self.size = (100 + constants.MEDIUM_CIRCLE, 63 + constants.MEDIUM_CIRCLE)
+
+        self.isActivePlayer = False
 
         """ Ajout des animations"""
         self.launchAnim = False
@@ -57,6 +58,8 @@ class Characters:
         self.animWalk.extraParameter(scale=(100 + constants.MEDIUM_CIRCLE, 63 + constants.MEDIUM_CIRCLE))
         self.animIdle = animation.Animation("Imgs/dinoGreenIdle.png", (680, 475), (0, 0), 10, 3, 4, 60, True)
         self.animIdle.extraParameter(scale=(100 + constants.MEDIUM_CIRCLE, 63 + constants.MEDIUM_CIRCLE))
+        self.animDead = animation.Animation("Imgs/dinoGreenDead.png", (680, 470), (0, 0), 8, 3, 3, 140, False)
+        self.animDead.extraParameter(scale=(100 + constants.MEDIUM_CIRCLE, 63 + constants.MEDIUM_CIRCLE))
         self.origAnim = (self.x, self.y)
 
     def drawCharacter(self, screen):
@@ -122,22 +125,15 @@ class Characters:
         if self.displayBoxes == 1:
             self.drawCharacter(screen)
         if self.animConstant == constants.IDLE:
-            self.launchAnim = self.animIdle.playAnim(screen, self.origAnim)
+            endAnim = self.launchAnim = self.animIdle.playAnim(screen, self.origAnim)
             self.firstLoop = 1
         if self.animConstant == constants.WALK:
-            self.launchAnim = self.animWalk.playAnim(screen, self.origAnim)
+            endAnim = self.launchAnim = self.animWalk.playAnim(screen, self.origAnim)
             self.firstLoop = 1
+        if self.animConstant == constants.DEAD:
+            endAnim = self.launchAnim = self.animDead.playAnim(screen, self.origAnim)
 
-        """
-        self.isCollided(world, area, "Feet")
-        if self.collideRect["Feet"] == 1:
-            return
-        elif self.collideRect["Feet"] == 0:
-            print(self.collideRect["Feet"] == 1)
-            print(self.collideRect)
-            self.y += 2
-            self.origAnim = (self.x, self.y)
-        """
+        return endAnim
 
     def moveCharacter(self, world, area):
         if self.wantsToWalkRight:
@@ -194,3 +190,9 @@ class Characters:
                 else:
                     self.collideRect[place] = 0
                     break
+
+    def loseHp(self, hp):
+        self.hp -= hp
+
+        if self.hp <= 0:
+            self.animConstant = constants.DEAD

@@ -289,12 +289,14 @@ class projectile(object):
                 if rectProj.colliderect(player.allRect):
                     isCollision = True
             else:
-                if (math.pow((self.origAnim[0] - player.allRect.x), 2) < areaCircle or
-                    math.pow((self.origAnim[1] - player.allRect.y), 2) < areaCircle or
-                    math.pow((self.origAnim[0] - player.allRect.x + player.allRect.w), 2) < areaCircle or
-                    math.pow((self.origAnim[1] - player.allRect.y + player.allRect.h), 2) < areaCircle
+                if (math.pow((player.allRect.x - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2) <  areaCircle or
+                    math.pow((player.allRect.x  - self.origAnim[0]), 2) + math.pow((player.allRect.y + player.allRect.h - self.origAnim[1]), 2) < areaCircle or
+                    math.pow((player.allRect.x + player.allRect.w  - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2) < areaCircle or
+                    math.pow((player.allRect.x + player.allRect.w  - self.origAnim[0]), 2) + math.pow((player.allRect.y + player.allRect.h - self.origAnim[1]), 2) < areaCircle
                 ):
+                    print(math.pow((player.allRect.x - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2))
+                    print(math.pow(areaCircle, 2))
                     isCollision = True
-                    player.hp -= 50
+                    player.loseHp(50)
 
         return isCollision

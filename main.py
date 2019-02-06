@@ -22,11 +22,12 @@ wait = True
 isFullScreen = False
 inMenu = True
 leavingMenu = False
+endOfGame = constants.CONTINUE_GAME
 
 while wait:
     if inMenu:
         leavingMenu = False
-        mainMenu.chooseMenu(screen)
+        mainMenu.chooseMenu(screen, endOfGame)
         menuAction = mainMenu.eventMenu()
 
         if menuAction == constants.ACTION_PLAY:
@@ -75,7 +76,12 @@ while wait:
 
             if event.type == pygame.QUIT:
                 wait = False
-        newGame.printElements(screen)
+
+        endOfGame = newGame.printElements(screen)
+        if endOfGame:
+            inMenu = True
+            mainMenu.constMenu = constants.VICTORY_MENU
+
     pygame.display.update()
     pygame.time.delay(int(1000 / constants.FRAME_PER_SECOND))
 
