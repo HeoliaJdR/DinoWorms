@@ -42,7 +42,6 @@ class Game:
         needEndOfTurn = not self.proj.launchBall(screen, area, self.world, self.players)
 
         for player in self.players:
-            print(player.name, player.hp)
             player.moveCharacter(self.world, area)
             needDestroy = not player.displayCharacter(screen, area, self.world)
             player.updateYPos(self.world, area)
