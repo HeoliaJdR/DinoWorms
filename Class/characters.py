@@ -8,6 +8,7 @@ from Class import animation
 class Characters:
     def __init__(self, hp, team, x, y, loop, name):
         self.hp = hp
+        self.time = 0
         self.team = team
         self.x = x
         self.y = y
@@ -21,7 +22,8 @@ class Characters:
             "TopR": 0,
             "BotR": 0,
             "Head": 0,
-            "Feet": 0,
+            "FeetL": 0,
+            "FeetR": 0,
             "Tail": 0
         }
         self.name = name
@@ -39,7 +41,8 @@ class Characters:
             "TopR": Rect(self.x, self.y - (150 / 4), 113 / 4, 150 / 4),
             "BotR": Rect(self.x, self.y, 113 / 4, 150 / 4),
             "Head": Rect(self.x - 10, self.y - (150 / 4) - 15, 25, 15),
-            "Feet": Rect(self.x - 25, self.y - (150 / 4) + 70, 50, 15),
+            "FeetL": Rect(self.x - 35, self.y - (150 / 4) + 70, 50, 15),
+            "FeetR": Rect(self.x + 35, self.y - (150 / 4) + 70, 50, 15),
             "Tail": Rect(self.x - 40, self.y, 15, 15)
         }
 
@@ -62,20 +65,28 @@ class Characters:
         pygame.draw.rect(screen, (0, 0, 0), self.rect["TopR"])
         pygame.draw.rect(screen, (0, 0, 0), self.rect["TopL"])
         pygame.draw.rect(screen, (255, 0, 0), self.rect["Head"])
-        pygame.draw.rect(screen, (255, 0, 0), self.rect["Feet"])
+        pygame.draw.rect(screen, (255, 0, 0), self.rect["FeetL"])
+        pygame.draw.rect(screen, (255, 0, 0), self.rect["FeetR"])
         pygame.draw.rect(screen, (0, 255, 0), self.rect["Tail"])
 
     def jumpCharacter(self):
-        self.isJumping = True
+        startX = self.x
         startY = self.y
-        vely = math.sin(90) * 70
-        distY = (vely * 2) + ((-4.9 * (2 ** 2)) / 2)
+        vely = -12.0
+        velx = math.sin(90) * 30
+        vely += math.sin(90) * 30
+        distX = (velx * self.time) + ((-4.9 * (self.time ** 2)) / 2)
+        distY = (vely * self.time) + ((-4.9 * (self.time ** 2)) / 2)
+        newx = round(distX / 2 + startX)
         newy = round(startY - distY)
-        return newy
+        return distY, distX
 
+    def checkSlope(self):
+        return 0
 
     def updateYPos(self, world, area):
-        self.isCollided(world, area, "Feet")
+        self.isCollided(world, area, "FeetL")
+        self.isCollided(world, area, "FeetR")
         if self.canGoDown == 1:
             self.y += constants.GRAVITY
         self.updateCollideBoxes()
@@ -88,7 +99,8 @@ class Characters:
             "TopR": Rect(self.x, self.y - (150 / 4), 113 / 4, 150 / 4),
             "BotR": Rect(self.x, self.y, 113 / 4, 150 / 4),
             "Head": Rect(self.x - 10, self.y - (150 / 4) - 15, 25, 15),
-            "Feet": Rect(self.x - 25, self.y - (150 / 4) + 70, 50, 15),
+            "FeetL": Rect(self.x - 15, self.y - (150 / 4) + 70, 15, 15),
+            "FeetR": Rect(self.x + 15, self.y - (150 / 4) + 70, 15, 15),
             "Tail": Rect(self.x - 40, self.y, 15, 15)
         }
         self.allRect = self.rect["Tail"]
@@ -96,6 +108,17 @@ class Characters:
             self.allRect = self.allRect.union(rect)
 
     def displayCharacter(self, screen, area, world):
+        if self.isJumping == True:
+            self.time += 0.5
+            pos = self.jumpCharacter()
+            #self.x = pos[0]
+            self.y = pos[1]
+            self.canGoDown = 1
+            if self.time > 3:
+                self.isJumping = False
+                self.time = 0
+                self.displayCharacter(screen, area, world)
+
         if self.displayBoxes == 1:
             self.drawCharacter(screen)
         if self.animConstant == constants.IDLE:
@@ -127,8 +150,9 @@ class Characters:
             if self.collideRect["Head"] == 1: return
             if self.collideRect["TopR"] == 1: return
             if self.collideRect["BotR"] == 1: return
-
-            self.x += 4
+            self.updateCollideBoxes()
+            self.x += 3
+            print(self.x, self.rect, self.collideRect)
             self.origAnim = (self.x, self.y)
             for key in self.collideRect:
                 self.collideRect[key] = 0
@@ -144,13 +168,14 @@ class Characters:
             if self.collideRect["TopL"] == 1: return
             if self.collideRect["BotL"] == 1: return
             if self.collideRect["Tail"] == 1: return
-            self.x -= 4
+            self.updateCollideBoxes()
+            self.x -= 3
             self.origAnim = (self.x, self.y)
             for key in self.collideRect:
-                if key != "Feet":
+                if key != "FeetL" or key != "FeetR":
                     #print(key)
                     self.collideRect[key] = 0
-        self.updateCollideBoxes()
+
 
 
     def isCollided(self, newWorld, area, place):
@@ -158,12 +183,12 @@ class Characters:
             for j in self.rect[place]:
                 if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
                     self.collideRect[place] = 1
-                    if place == "Feet":
+                    if place == "FeetL" or place == "FeetR":
                         self.canGoDown = 0
                     break
                 if area[j][i] == 1:
                     self.collideRect[place] = 1
-                    if place == "Feet":
+                    if place == "FeetL" or place == "FeetR":
                         self.canGoDown = 0
                     break
                 else:

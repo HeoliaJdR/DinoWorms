@@ -65,7 +65,8 @@ class Game:
             if event.key == pygame.K_c:
                 self.endOfTurn()
             if event.key == pygame.K_SPACE:
-                self.players[self.activePlayer].jumpCharacter()
+                if self.players[self.activePlayer].isJumping == False:
+                    self.players[self.activePlayer].isJumping = True
             if event.key == pygame.K_d:
                 self.players[self.activePlayer].wantsToWalkRight = True
                 self.players[self.activePlayer].animConstant = constants.WALK
