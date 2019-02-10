@@ -45,6 +45,7 @@ class Game:
             player.moveCharacter(self.world, area)
             needDestroy = not player.displayCharacter(screen, area, self.world)
             player.updateYPos(self.world, area)
+            player.jumpCharacter()
 
             if needDestroy:
                 endOfGame = self.destroyPlayer(player)

@@ -14,6 +14,7 @@ class Characters:
         self.y = y
         self.posture = 0
         self.direction = 0
+        self.previousDiff = 0
         self.loop = loop
         self.firstLoop = 0
         self.collideRect = {
@@ -73,19 +74,37 @@ class Characters:
         pygame.draw.rect(screen, (0, 255, 0), self.rect["Tail"])
 
     def jumpCharacter(self):
-        startX = self.x
-        startY = self.y
-        vely = -12.0
-        velx = math.sin(90) * 30
-        vely += math.sin(90) * 30
-        distX = (velx * self.time) + ((-4.9 * (self.time ** 2)) / 2)
-        distY = (vely * self.time) + ((-4.9 * (self.time ** 2)) / 2)
-        newx = round(distX / 2 + startX)
-        newy = round(startY - distY)
-        return distY, distX
+        if self.isJumping == True:
+            if self.wantsToWalkRight:
+                self.x += 3
+            self.time += 0.5
+            self.y -= 25
+        if self.time > 2:
+            self.isJumping = False
+            self.time = 0
+            self.canGoDown = 1
 
-    def checkSlope(self):
-        return 0
+    def checkSlope(self, area):
+        counter = 0
+        if self.wantsToWalkLeft:
+            newX = self.rect["FeetL"].x - 19
+            newY = self.rect["FeetL"].y
+            counter = 0
+            for i in range(1, 8):
+                if area[newX][newY+i] == 0:
+                    counter -= 1
+                if area[newX][newY-i] == 1:
+                    counter += 1
+        if self.wantsToWalkRight:
+            newX = self.rect["FeetR"].x + 19
+            newY = self.rect["FeetR"].y
+            for i in range(1, 8):
+                if area[newX][newY+i] == 0:
+                    counter -= 1
+                if area[newX][newY-i] == 1:
+                    counter += 1
+        print(counter)
+        return counter
 
     def updateYPos(self, world, area):
         self.isCollided(world, area, "FeetL")
@@ -111,7 +130,7 @@ class Characters:
             self.allRect = self.allRect.union(rect)
 
     def displayCharacter(self, screen, area, world):
-        if self.isJumping == True:
+        """if self.isJumping == True:
             self.time += 0.5
             pos = self.jumpCharacter()
             #self.x = pos[0]
@@ -121,7 +140,7 @@ class Characters:
                 self.isJumping = False
                 self.time = 0
                 self.displayCharacter(screen, area, world)
-
+        """
         if self.displayBoxes == 1:
             self.drawCharacter(screen)
         if self.animConstant == constants.IDLE:
@@ -147,9 +166,19 @@ class Characters:
             if self.collideRect["TopR"] == 1: return
             if self.collideRect["BotR"] == 1: return
             self.updateCollideBoxes()
+            moveY = self.checkSlope(area)
+            if moveY > 0:
+                self.y += moveY
+            elif moveY < 0:
+                self.canGoDown = 1
+                self.y -= moveY
+            else:
+                self.y = self.y
             self.x += 3
-            print(self.x, self.rect, self.collideRect)
+            #print(self.x, self.rect, self.collideRect)
             self.origAnim = (self.x, self.y)
+            if self.name == "Joueur_1":
+                print("SelfY : " + str(self.y))
             for key in self.collideRect:
                 self.collideRect[key] = 0
         if self.wantsToWalkLeft:
@@ -165,8 +194,18 @@ class Characters:
             if self.collideRect["BotL"] == 1: return
             if self.collideRect["Tail"] == 1: return
             self.updateCollideBoxes()
+            moveY = self.checkSlope(area)
+            if moveY > 0:
+                self.canGoDown = 1
+                self.y -= moveY
+            elif moveY < 0:
+                self.y += moveY
+            else:
+                self.y = self.y
             self.x -= 3
             self.origAnim = (self.x, self.y)
+            if self.name == "Joueur_1":
+                print("SelfY : " + str(self.y))
             for key in self.collideRect:
                 if key != "FeetL" or key != "FeetR":
                     #print(key)
