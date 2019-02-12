@@ -103,7 +103,7 @@ class Characters:
                     counter -= 1
                 if area[newX][newY-i] == 1:
                     counter += 1
-        print(counter)
+        #print(counter)
         return counter
 
     def updateYPos(self, world, area):
@@ -182,8 +182,8 @@ class Characters:
             self.x += 3
             #print(self.x, self.rect, self.collideRect)
             self.origAnim = (self.x, self.y)
-            if self.name == "Joueur_1":
-                print("SelfY : " + str(self.y))
+            #if self.name == "Joueur_1":
+                #print("SelfY : " + str(self.y))
             for key in self.collideRect:
                 self.collideRect[key] = 0
         if self.wantsToWalkLeft:
@@ -209,8 +209,8 @@ class Characters:
                 self.y = self.y
             self.x -= 3
             self.origAnim = (self.x, self.y)
-            if self.name == "Joueur_1":
-                print("SelfY : " + str(self.y))
+            #if self.name == "Joueur_1":
+                #print("SelfY : " + str(self.y))
             for key in self.collideRect:
                 if key != "FeetL" or key != "FeetR":
                     #print(key)
