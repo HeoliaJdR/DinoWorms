@@ -141,6 +141,8 @@ class Characters:
                 self.time = 0
                 self.displayCharacter(screen, area, world)
         """
+        pygame.draw.rect(screen, (0, 255, 0), (self.x - 25, self.y - 100, self.hp, 10), 0)
+        pygame.draw.rect(screen, (0, 0, 0), (self.x - 25, self.y - 100, 100, 10), 1)
         if self.displayBoxes == 1:
             self.drawCharacter(screen)
         if self.animConstant == constants.IDLE:
@@ -168,9 +170,12 @@ class Characters:
             self.updateCollideBoxes()
             moveY = self.checkSlope(area)
             if moveY > 0:
+                if moveY > 5:
+                    moveY -= 9
                 self.y += moveY
             elif moveY < 0:
-                self.canGoDown = 1
+                if moveY < -5:
+                    self.canGoDown = 1
                 self.y -= moveY
             else:
                 self.y = self.y
