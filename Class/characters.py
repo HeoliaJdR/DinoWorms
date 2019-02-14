@@ -12,6 +12,8 @@ class Characters:
         self.team = team
         self.x = x
         self.y = y
+        self.teleport = 1
+        self.line = []
         self.posture = 0
         self.direction = 0
         self.previousDiff = 0
@@ -38,9 +40,9 @@ class Characters:
         self.wantsToWalkLeft = False
         self.rect = {
             "TopL": Rect(self.x - (113 / 4), self.y - (150 / 4), 113 / 4, 150 / 4),
-            "BotL": Rect(self.x - (113 / 4), self.y, 113 / 4, 150 / 4),
+            "BotL": Rect(self.x - (113 / 4), self.y, 113 / 4, 90 / 4),
             "TopR": Rect(self.x, self.y - (150 / 4), 113 / 4, 150 / 4),
-            "BotR": Rect(self.x, self.y, 113 / 4, 150 / 4),
+            "BotR": Rect(self.x, self.y, 113 / 4, 90 / 4),
             "Head": Rect(self.x - 10, self.y - (150 / 4) - 15, 25, 15),
             "FeetL": Rect(self.x - 35, self.y - (150 / 4) + 70, 50, 15),
             "FeetR": Rect(self.x + 35, self.y - (150 / 4) + 70, 50, 15),
@@ -77,6 +79,8 @@ class Characters:
         if self.isJumping == True:
             if self.wantsToWalkRight:
                 self.x += 3
+            if self.wantsToWalkLeft:
+                self.x -= 3
             self.time += 0.5
             self.y -= 25
         if self.time > 2:
@@ -84,25 +88,36 @@ class Characters:
             self.time = 0
             self.canGoDown = 1
 
+    def teleportCharacter(self):
+        if self.teleport == 1:
+            mousePos = pygame.mouse.get_pos()
+            #print(mousePos[0])
+            self.x = mousePos[0]
+            self.y = mousePos[1]
+            for key in self.collideRect:
+                self.collideRect[key] = 0
+            self.canGoDown = 1
+            self.teleport = 0
+
     def checkSlope(self, area):
         counter = 0
         if self.wantsToWalkLeft:
-            newX = self.rect["FeetL"].x - 19
-            newY = self.rect["FeetL"].y
+            newX = self.rect["FeetL"].x
+            newY = self.rect["FeetL"].y + 16
             counter = 0
-            for i in range(1, 8):
+            for i in range(1, 15):
                 if area[newX][newY+i] == 0:
                     counter -= 1
                 if area[newX][newY-i] == 1:
                     counter += 1
         if self.wantsToWalkRight:
-            newX = self.rect["FeetR"].x + 19
-            newY = self.rect["FeetR"].y
-            for i in range(1, 8):
+            newX = self.rect["FeetR"].x
+            newY = self.rect["FeetR"].y + 16
+            for i in range(1, 15):
                 if area[newX][newY+i] == 0:
-                    counter -= 1
-                if area[newX][newY-i] == 1:
                     counter += 1
+                if area[newX][newY-i] == 1:
+                    counter -= 1
         #print(counter)
         return counter
 
@@ -117,14 +132,15 @@ class Characters:
     def updateCollideBoxes(self):
         self.rect = {
             "TopL": Rect(self.x - (113 / 4), self.y - (150 / 4), 113 / 4, 150 / 4),
-            "BotL": Rect(self.x - (113 / 4), self.y, 113 / 4, 150 / 4),
+            "BotL": Rect(self.x - (113 / 4), self.y, 113 / 4, 90 / 4),
             "TopR": Rect(self.x, self.y - (150 / 4), 113 / 4, 150 / 4),
-            "BotR": Rect(self.x, self.y, 113 / 4, 150 / 4),
+            "BotR": Rect(self.x, self.y, 113 / 4, 90 / 4),
             "Head": Rect(self.x - 10, self.y - (150 / 4) - 15, 25, 15),
             "FeetL": Rect(self.x - 15, self.y - (150 / 4) + 70, 15, 15),
             "FeetR": Rect(self.x + 15, self.y - (150 / 4) + 70, 15, 15),
             "Tail": Rect(self.x - 40, self.y, 15, 15)
         }
+
         self.allRect = self.rect["Tail"]
         for rect in self.rect.values():
             self.allRect = self.allRect.union(rect)
@@ -164,26 +180,20 @@ class Characters:
             self.isCollided(world, area, "TopR")
             self.isCollided(world, area, "BotR")
             self.isCollided(world, area, "Head")
+            #print(self.collideRect)
             if self.collideRect["Head"] == 1: return
             if self.collideRect["TopR"] == 1: return
             if self.collideRect["BotR"] == 1: return
             self.updateCollideBoxes()
             moveY = self.checkSlope(area)
             if moveY > 0:
-                if moveY > 5:
-                    moveY -= 9
                 self.y += moveY
             elif moveY < 0:
-                if moveY < -5:
-                    self.canGoDown = 1
-                self.y -= moveY
+                self.y += moveY
             else:
                 self.y = self.y
             self.x += 3
-            #print(self.x, self.rect, self.collideRect)
             self.origAnim = (self.x, self.y)
-            #if self.name == "Joueur_1":
-                #print("SelfY : " + str(self.y))
             for key in self.collideRect:
                 self.collideRect[key] = 0
         if self.wantsToWalkLeft:
@@ -201,16 +211,13 @@ class Characters:
             self.updateCollideBoxes()
             moveY = self.checkSlope(area)
             if moveY > 0:
-                self.canGoDown = 1
                 self.y -= moveY
             elif moveY < 0:
-                self.y += moveY
+                self.y -= moveY
             else:
                 self.y = self.y
             self.x -= 3
             self.origAnim = (self.x, self.y)
-            #if self.name == "Joueur_1":
-                #print("SelfY : " + str(self.y))
             for key in self.collideRect:
                 if key != "FeetL" or key != "FeetR":
                     #print(key)
@@ -219,16 +226,20 @@ class Characters:
 
 
     def isCollided(self, newWorld, area, place):
-        for i in self.rect[place]:
-            for j in self.rect[place]:
-                if i <= 0 or j <= 0 or i >= newWorld.screenW or j >= newWorld.screenH:
+        for i in range(self.rect[place].y, self.rect[place].y + self.rect[place].height):
+            for j in range(self.rect[place].x, self.rect[place].x + self.rect[place].width):
+                if i <= 0 or j <= 0 or i >= newWorld.screenH or j >= newWorld.screenW:
                     self.collideRect[place] = 1
                     if place == "FeetL" or place == "FeetR":
+                        #print("Rect in : " + str(self.rect[place]) + "J = " + str(j) + " ; I = " + str(i))
+                        #print(str(newWorld.screenW) + " " + str(newWorld.screenH))
                         self.canGoDown = 0
                     break
                 if area[j][i] == 1:
                     self.collideRect[place] = 1
                     if place == "FeetL" or place == "FeetR":
+                        #print("Rect in : " + str(self.rect[place]) + "J = " + str(j) + " ; I = " + str(i))
+                        #print(str(newWorld.screenW) + " " + str(newWorld.screenH))
                         self.canGoDown = 0
                     break
                 else:

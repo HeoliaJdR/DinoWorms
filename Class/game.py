@@ -72,12 +72,15 @@ class Game:
                 self.proj.cleanTrajectory()
             if event.key == pygame.K_c:
                 self.endOfTurn()
+            if event.key == pygame.K_t:
+                self.players[self.activePlayer].teleportCharacter()
             if event.key == pygame.K_SPACE:
                 if self.players[self.activePlayer].isJumping == False:
                     self.players[self.activePlayer].isJumping = True
             if event.key == pygame.K_d:
                 self.players[self.activePlayer].wantsToWalkRight = True
                 self.players[self.activePlayer].animConstant = constants.WALK
+
             if event.key == pygame.K_a:
                 self.players[self.activePlayer].wantsToWalkLeft = True
                 self.players[self.activePlayer].animConstant = constants.WALK
