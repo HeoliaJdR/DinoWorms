@@ -263,7 +263,10 @@ class Characters:
                     break
 
     def loseHp(self, hp):
-        self.hp -= hp
+        if hp == 100:
+            self.hp = 0
+        else:
+            self.hp -= hp
 
         if self.hp <= 0:
             self.animConstant = constants.DEAD
