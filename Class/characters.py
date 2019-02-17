@@ -67,6 +67,7 @@ class Characters:
         self.origAnim = (self.x, self.y)
 
         self.font = pygame.font.SysFont("comicsansms", 20)
+        self.lookRight = True
 
     def drawCharacter(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), self.rect["BotR"])

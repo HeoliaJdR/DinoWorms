@@ -52,8 +52,20 @@ class Game:
             if needDestroy:
                 endOfGame = self.destroyPlayer(player)
 
-            if player.isActivePlayer and not self.proj.shoot:
-                self.proj.golfBall.changeOrig((player.x, player.y - player.allRect.h))
+            #if player.isActivePlayer and not self.proj.shoot:
+            #    self.proj.golfBall.changeOrig((player.x, player.y - player.allRect.h))
+            mousePosX,mousePosY = pygame.mouse.get_pos()
+
+            if player.isActivePlayer and not self.proj.shoot and mousePosX > player.x:
+                self.proj.golfBall.changeOrig((player.x + 30, player.y - 20))
+                if not player.lookRight:
+                    player.flipAnim()
+                    player.lookRight = True
+            elif player.isActivePlayer and not self.proj.shoot:
+                self.proj.golfBall.changeOrig((player.x - 70, player.y - 20))
+                if player.lookRight:
+                    player.flipAnim()
+                    player.lookRight = False
 
         if needEndOfTurn:
             self.endOfTurn()
