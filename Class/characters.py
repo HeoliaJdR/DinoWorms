@@ -65,6 +65,8 @@ class Characters:
         self.animDead.extraParameter(scale=(100 + constants.MEDIUM_CIRCLE, 63 + constants.MEDIUM_CIRCLE))
         self.origAnim = (self.x, self.y)
 
+        self.font = pygame.font.SysFont("comicsansms", 20)
+
     def drawCharacter(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), self.rect["BotR"])
         pygame.draw.rect(screen, (0, 0, 0), self.rect["BotL"])
@@ -167,6 +169,13 @@ class Characters:
         """
         pygame.draw.rect(screen, (0, 255, 0), (self.x - 25, self.y - 100, self.hp, 10), 0)
         pygame.draw.rect(screen, (0, 0, 0), (self.x - 25, self.y - 100, 100, 10), 1)
+        if self.team == 0:
+            label = self.font.render("Blue", 1, (0, 0, 255))
+            screen.blit(label, (self.x, self.y - 80))
+        else:
+            label = self.font.render("Red", 1, (255, 0, 0))
+            screen.blit(label, (self.x, self.y - 80))
+
         if self.displayBoxes == 1:
             self.drawCharacter(screen)
         if self.animConstant == constants.IDLE:
