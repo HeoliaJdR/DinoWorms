@@ -33,6 +33,7 @@ class Characters:
         self.canGoDown = 1
         self.displayBoxes = 0
         self.isJumping = False
+        self.stillJumping = False
         #self.player = None
         #self.spriteSheet = "Imgs/dinoGreen.png"
         self.animConstant = constants.IDLE
@@ -262,6 +263,8 @@ class Characters:
                         #print("Rect in : " + str(self.rect[place]) + "J = " + str(j) + " ; I = " + str(i))
                         #print(str(newWorld.screenW) + " " + str(newWorld.screenH))
                         self.canGoDown = 0
+                        if self.stillJumping == True:
+                            self.stillJumping = False
                     break
                 else:
                     self.collideRect[place] = 0

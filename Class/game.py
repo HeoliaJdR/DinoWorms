@@ -77,8 +77,9 @@ class Game:
             if event.key == pygame.K_t:
                 self.players[self.activePlayer].teleportCharacter()
             if event.key == pygame.K_SPACE:
-                if self.players[self.activePlayer].isJumping == False:
+                if self.players[self.activePlayer].isJumping == False and self.players[self.activePlayer].stillJumping != True:
                     self.players[self.activePlayer].isJumping = True
+                    self.players[self.activePlayer].stillJumping = True
             if event.key == pygame.K_d:
                 self.players[self.activePlayer].wantsToWalkRight = True
                 self.players[self.activePlayer].animConstant = constants.WALK
