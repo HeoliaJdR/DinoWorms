@@ -172,8 +172,11 @@ class Characters:
         if self.team == 0:
             label = self.font.render("Blue", 1, (0, 0, 255))
             screen.blit(label, (self.x, self.y - 80))
-        else:
+        elif self.team == 1:
             label = self.font.render("Red", 1, (255, 0, 0))
+            screen.blit(label, (self.x, self.y - 80))
+        else:
+            label = self.font.render("Green", 1, (0, 255, 0))
             screen.blit(label, (self.x, self.y - 80))
 
         if self.displayBoxes == 1:
@@ -191,13 +194,14 @@ class Characters:
 
     def moveCharacter(self, world, area):
         if self.wantsToWalkRight:
-            if self.direction == 0:
+            if self.direction == 1:
+                self.flipAnim()
                 # self.player = pygame.transform.flip(self.player, True, True)
-                self.direction = 1
-            self.isCollided(world, area, "TopR", 4)
-            self.isCollided(world, area, "BotR", 4)
-            self.isCollided(world, area, "Head", 4)
-            #print(self.collideRect)
+                self.isCollided(world, area, "TopR", 4)
+                self.isCollided(world, area, "BotR", 4)
+                self.isCollided(world, area, "Head", 4)
+                self.direction = 0
+
             if self.collideRect["Head"] == 1: return
             if self.collideRect["TopR"] == 1: return
             if self.collideRect["BotR"] == 1: return
@@ -214,13 +218,14 @@ class Characters:
             for key in self.collideRect:
                 self.collideRect[key] = 0
         if self.wantsToWalkLeft:
-            if self.direction == 1:
-                # self.player = pygame.transform.flip(self.player, True, True)
-                self.direction = 0
-            self.isCollided(world, area, "TopL", 4)
-            self.isCollided(world, area, "BotL", 4)
-            self.isCollided(world, area, "Tail", 4)
-            self.isCollided(world, area, "Head", 4)
+            if self.direction == 0:
+                self.flipAnim()
+                self.isCollided(world, area, "TopL", 4)
+                self.isCollided(world, area, "BotL", 4)
+                self.isCollided(world, area, "Tail", 4)
+                self.isCollided(world, area, "Head", 4)
+                self.direction = 1
+
             if self.collideRect["Head"] == 1: return
             if self.collideRect["TopL"] == 1: return
             if self.collideRect["BotL"] == 1: return
@@ -261,6 +266,11 @@ class Characters:
                 else:
                     self.collideRect[place] = 0
                     break
+
+    def flipAnim(self):
+        self.animDead.flipAnimation()
+        self.animIdle.flipAnimation()
+        self.animWalk.flipAnimation()
 
     def loseHp(self, hp):
         if hp == 100:

@@ -33,7 +33,7 @@ while wait:
         if menuAction == constants.ACTION_PLAY:
             inMenu = False
             leavingMenu = True
-            newGame = game.Game(mainMenu.nbDino * 2, (screenWith - 200, screenHeight - 200))
+            newGame = game.Game(mainMenu.nbPlayers, mainMenu.nbDino, (screenWith - 200, screenHeight - 200))
         elif menuAction == constants.ACTION_CONTINUE:
             inMenu = False
             leavingMenu = True
@@ -55,22 +55,22 @@ while wait:
                 if event.key == pygame.K_ESCAPE:
                     inMenu = True
                     mainMenu.constMenu = constants.PAUSE_MENU
-                # if event.key == pygame.K_f:
-                #     if isFullScreen:
-                #         isFullScreen = False
-                #         tempScreen = pygame.transform.scale(screen.convert(), (screenWith - 200, screenHeight - 200))
-                #         pygame.display.quit()
-                #         pygame.display.init()
-                #         screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.RESIZABLE)
-                #         screen.blit(tempScreen, (0, 0))
-                #     else:
-                #         isFullScreen = True
-                #         tempScreen = pygame.transform.scale(screen.convert(), (screenWith, screenHeight))
-                #         pygame.display.quit()
-                #         pygame.display.init()
-                #         screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-                #         screen.blit(tempScreen, (0, 0))
-                #     pygame.display.flip()
+                if event.key == pygame.K_f:
+                    if isFullScreen:
+                        isFullScreen = False
+                        tempScreen = pygame.transform.scale(screen.convert(), (screenWith - 200, screenHeight - 200))
+                        pygame.display.quit()
+                        pygame.display.init()
+                        screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.RESIZABLE)
+                        screen.blit(tempScreen, (0, 0))
+                    else:
+                        isFullScreen = True
+                        tempScreen = pygame.transform.scale(screen.convert(), (screenWith, screenHeight))
+                        pygame.display.quit()
+                        pygame.display.init()
+                        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+                        screen.blit(tempScreen, (0, 0))
+                    pygame.display.flip()
                 if event.key == pygame.K_h:
                     changeWind = True
 

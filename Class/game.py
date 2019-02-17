@@ -5,8 +5,9 @@ from Class import characters
 from Class import projectile
 
 class Game:
-    def __init__(self, nbPlayers, screenSize):
+    def __init__(self, nbPlayers, nbDinos, screenSize):
         self.nbPlayers = nbPlayers
+        self.nbDinos = nbDinos * nbPlayers
 
         self.world = world.World(screenSize[1], screenSize[0])
         self.world.initBackground()
@@ -19,17 +20,18 @@ class Game:
         self.initPlayers()
 
         self.activePlayer = 0
+        self.teamLastTurn = 0
 
     def initPlayers(self):
         self.players = []
-        xOrig = 200
+        xOrig = 50
         yOrig = 350
-        for i in range (self.nbPlayers):
-            self.players.append(characters.Characters(100, i%2, xOrig, yOrig, True, "Joueur_" + str(i+1)))
+        for i in range (self.nbDinos):
+            self.players.append(characters.Characters(100, i%self.nbPlayers, xOrig, yOrig, True, "Joueur_" + str(i+1)))
             if i == 0:
                 self.players[i].isActivePlayer = True
             #self.players[i].updateYPos(self.world, self.world.getPixels())
-            xOrig += 200
+            xOrig += 175
 
     def printElements(self, screen):
         area = self.world.getPixels()
@@ -102,27 +104,33 @@ class Game:
     def destroyPlayer(self, player):
         isActivePlayer = player.isActivePlayer
         self.players.remove(player)
-        self.nbPlayers -= 1
-        self.activePlayer = 0 if self.activePlayer >= self.nbPlayers else self.activePlayer
+        self.nbDinos -= 1
+        self.activePlayer = 0 if self.activePlayer >= self.nbDinos else self.activePlayer
         if isActivePlayer:
             self.players[self.activePlayer].isActivePlayer = True
 
         return self.verifyTeamIntegrity()
 
     def verifyTeamIntegrity(self):
-        team1 = False
-        team2 = False
+        differentTeam = False
+        lastTeam = 0;
 
-        for player in self.players:
-            if player.team == 0:
-                team1 = True
-            if player.team == 1:
-                team2 = True
+        for i in range(self.nbDinos):
+            differentTeam = False
+            print(self.players[i].name + " : " + str(self.players[i].team))
+            if(i == 0):
+                lastTeam = self.players[i].team;
+            elif(lastTeam != self.players[i].team):
+                differentTeam = True
+                break
 
-        if not team1:
-            return constants.VICTORY_TEAM_2
-        if not team2:
-            return constants.VICTORY_TEAM_1
+        if not differentTeam:
+            if lastTeam == 0:
+                return constants.VICTORY_TEAM_1
+            if lastTeam == 1:
+                return constants.VICTORY_TEAM_2
+            if lastTeam == 2:
+                return constants.VICTORY_TEAM_3
 
         return constants.CONTINUE_GAME
 
@@ -136,7 +144,7 @@ class Game:
             self.players[self.activePlayer].wantsToWalkRight = False
             self.players[self.activePlayer].isActivePlayer = False
             self.activePlayer += 1
-            self.activePlayer = 0 if self.activePlayer >= self.nbPlayers else self.activePlayer
+            self.activePlayer = 0 if self.activePlayer >= self.nbDinos else self.activePlayer
 
             current_player = self.players[self.activePlayer]
             current_player.isActivePlayer = True

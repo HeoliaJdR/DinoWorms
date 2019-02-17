@@ -246,13 +246,13 @@ class projectile(object):
                     self.golfBall.x + self.golfBall.radius / 2,
                     self.golfBall.y + self.golfBall.radius / 2
                 )
-        if self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 1000:
+        if self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 1000 and self.shoot:
             label = self.font.render("3", 1, (255, 0, 0))
             win.blit(label, (self.golfBall.x - 10, self.golfBall.y - 10))
-        elif self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 2000:
+        elif self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 2000 and self.shoot:
             label = self.font.render("2", 1, (255, 0, 0))
             win.blit(label, (self.golfBall.x - 10, self.golfBall.y - 10))
-        elif self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 3000:
+        elif self.type == 1 and pygame.time.get_ticks() - self.totaltime <= 3000 and self.shoot:
             label = self.font.render("1", 1, (255, 0, 0))
             win.blit(label, (self.golfBall.x - 10, self.golfBall.y - 10))
 
@@ -294,8 +294,6 @@ class projectile(object):
                     math.pow((player.allRect.x + player.allRect.w  - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2) < areaCircle or
                     math.pow((player.allRect.x + player.allRect.w  - self.origAnim[0]), 2) + math.pow((player.allRect.y + player.allRect.h - self.origAnim[1]), 2) < areaCircle
                 ):
-                    print(math.pow((player.allRect.x - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2))
-                    print(math.pow(areaCircle, 2))
                     isCollision = True
                     player.loseHp(50)
 
