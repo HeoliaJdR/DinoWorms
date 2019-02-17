@@ -75,8 +75,13 @@ class Characters:
         pygame.draw.rect(screen, (255, 0, 0), self.rect["FeetR"])
         pygame.draw.rect(screen, (0, 255, 0), self.rect["Tail"])
 
-    def jumpCharacter(self):
-        if self.isJumping == True:
+    def jumpCharacter(self, world, area):
+        if self.isJumping:
+            self.isCollided(world, area, "Head", 0)
+            if self.collideRect["Head"] == 1:
+                self.isJumping = False
+                self.canGoDown = 1
+                return
             if self.wantsToWalkRight:
                 self.x += 3
             if self.wantsToWalkLeft:
@@ -99,31 +104,34 @@ class Characters:
             self.canGoDown = 1
             self.teleport = 0
 
-    def checkSlope(self, area):
+    def checkSlope(self, world, area):
         counter = 0
         if self.wantsToWalkLeft:
             newX = self.rect["FeetL"].x
             newY = self.rect["FeetL"].y + 16
             counter = 0
             for i in range(1, 15):
-                if area[newX][newY+i] == 0:
-                    counter -= 1
-                if area[newX][newY-i] == 1:
-                    counter += 1
+                if newY + i < world.screenH:
+                    if area[newX][newY+i] == 0:
+                        counter -= 1
+                    if area[newX][newY-i] == 1:
+                        counter += 1
         if self.wantsToWalkRight:
             newX = self.rect["FeetR"].x
             newY = self.rect["FeetR"].y + 16
             for i in range(1, 15):
-                if area[newX][newY+i] == 0:
-                    counter += 1
-                if area[newX][newY-i] == 1:
-                    counter -= 1
+                #print("Rect in : " + str(self.rect["FeetR"]))
+                if newY+i < world.screenH:
+                    if area[newX][newY+i] == 0:
+                        counter += 1
+                    if area[newX][newY-i] == 1:
+                        counter -= 1
         #print(counter)
         return counter
 
     def updateYPos(self, world, area):
-        self.isCollided(world, area, "FeetL")
-        self.isCollided(world, area, "FeetR")
+        self.isCollided(world, area, "FeetL", 7)
+        self.isCollided(world, area, "FeetR", 7)
         if self.canGoDown == 1:
             self.y += constants.GRAVITY
         self.updateCollideBoxes()
@@ -177,15 +185,15 @@ class Characters:
             if self.direction == 0:
                 # self.player = pygame.transform.flip(self.player, True, True)
                 self.direction = 1
-            self.isCollided(world, area, "TopR")
-            self.isCollided(world, area, "BotR")
-            self.isCollided(world, area, "Head")
+            self.isCollided(world, area, "TopR", 4)
+            self.isCollided(world, area, "BotR", 4)
+            self.isCollided(world, area, "Head", 4)
             #print(self.collideRect)
             if self.collideRect["Head"] == 1: return
             if self.collideRect["TopR"] == 1: return
             if self.collideRect["BotR"] == 1: return
             self.updateCollideBoxes()
-            moveY = self.checkSlope(area)
+            moveY = self.checkSlope(world, area)
             if moveY > 0:
                 self.y += moveY
             elif moveY < 0:
@@ -200,16 +208,16 @@ class Characters:
             if self.direction == 1:
                 # self.player = pygame.transform.flip(self.player, True, True)
                 self.direction = 0
-            self.isCollided(world, area, "TopL")
-            self.isCollided(world, area, "BotL")
-            self.isCollided(world, area, "Tail")
-            self.isCollided(world, area, "Head")
+            self.isCollided(world, area, "TopL", 4)
+            self.isCollided(world, area, "BotL", 4)
+            self.isCollided(world, area, "Tail", 4)
+            self.isCollided(world, area, "Head", 4)
             if self.collideRect["Head"] == 1: return
             if self.collideRect["TopL"] == 1: return
             if self.collideRect["BotL"] == 1: return
             if self.collideRect["Tail"] == 1: return
             self.updateCollideBoxes()
-            moveY = self.checkSlope(area)
+            moveY = self.checkSlope(world, area)
             if moveY > 0:
                 self.y -= moveY
             elif moveY < 0:
@@ -223,16 +231,15 @@ class Characters:
                     #print(key)
                     self.collideRect[key] = 0
 
-
-
-    def isCollided(self, newWorld, area, place):
+    def isCollided(self, newWorld, area, place, rangePrevision):
         for i in range(self.rect[place].y, self.rect[place].y + self.rect[place].height):
             for j in range(self.rect[place].x, self.rect[place].x + self.rect[place].width):
-                if i <= 0 or j <= 0 or i >= newWorld.screenH or j >= newWorld.screenW:
+                if i <= 0 or j <= 0 or i + 15 >= newWorld.screenH - 15 or j + rangePrevision >= newWorld.screenW - 15:
+                    if i + 15 >= newWorld.screenH - 10:
+                        self.loseHp(100)
+                        return
                     self.collideRect[place] = 1
                     if place == "FeetL" or place == "FeetR":
-                        #print("Rect in : " + str(self.rect[place]) + "J = " + str(j) + " ; I = " + str(i))
-                        #print(str(newWorld.screenW) + " " + str(newWorld.screenH))
                         self.canGoDown = 0
                     break
                 if area[j][i] == 1:
