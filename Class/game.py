@@ -22,15 +22,20 @@ class Game:
         self.activePlayer = 0
         self.teamLastTurn = 0
 
+        self.lastTeamPlayed = 0;
+        self.lastPlayerTeam1 = -1
+        self.lastPlayerTeam2 = -1
+        self.lastPlayerTeam3 = -1
+
     def initPlayers(self):
         self.players = []
+        self.team = []
         xOrig = 50
         yOrig = 350
         for i in range (self.nbDinos):
             self.players.append(characters.Characters(100, i%self.nbPlayers, xOrig, yOrig, True, "Joueur_" + str(i+1)))
             if i == 0:
                 self.players[i].isActivePlayer = True
-            #self.players[i].updateYPos(self.world, self.world.getPixels())
             xOrig += 175
 
     def printElements(self, screen):
@@ -44,13 +49,14 @@ class Game:
         needEndOfTurn = not self.proj.launchBall(screen, area, self.world, self.players)
 
         for player in self.players:
-            player.moveCharacter(self.world, area)
-            needDestroy = not player.displayCharacter(screen, area, self.world)
-            player.updateYPos(self.world, area)
-            player.jumpCharacter(self.world, area)
+            if not player.isDead or player.playDeadAnim:
+                player.moveCharacter(self.world, area)
+                needDestroy = not player.displayCharacter(screen)
+                player.updateYPos(self.world, area)
+                player.jumpCharacter(self.world, area)
 
-            if needDestroy:
-                endOfGame = self.destroyPlayer(player)
+                if needDestroy:
+                    endOfGame = self.destroyPlayer(player)
 
             #if player.isActivePlayer and not self.proj.shoot:
             #    self.proj.golfBall.changeOrig((player.x, player.y - player.allRect.h))
@@ -115,12 +121,7 @@ class Game:
             self.proj.releaseProjectile()
 
     def destroyPlayer(self, player):
-        isActivePlayer = player.isActivePlayer
-        self.players.remove(player)
-        self.nbDinos -= 1
-        self.activePlayer = 0 if self.activePlayer >= self.nbDinos else self.activePlayer
-        if isActivePlayer:
-            self.players[self.activePlayer].isActivePlayer = True
+        player.isDead = True
 
         return self.verifyTeamIntegrity()
 
@@ -129,13 +130,13 @@ class Game:
         lastTeam = 0;
 
         for i in range(self.nbDinos):
-            differentTeam = False
-            print(self.players[i].name + " : " + str(self.players[i].team))
-            if(i == 0):
-                lastTeam = self.players[i].team;
-            elif(lastTeam != self.players[i].team):
-                differentTeam = True
-                break
+            if not self.players[i].isDead:
+                differentTeam = False
+                if(i == 0):
+                    lastTeam = self.players[i].team;
+                elif(lastTeam != self.players[i].team):
+                    differentTeam = True
+                    break
 
         if not differentTeam:
             if lastTeam == 0:
@@ -147,6 +148,37 @@ class Game:
 
         return constants.CONTINUE_GAME
 
+    def findNextPlayer(self):
+        playerFind = False
+
+        potentialPlayerFind = False
+
+        for j in range(self.nbPlayers):
+            nextTeam = self.lastTeamPlayed + 1 + j if j + self.lastTeamPlayed + 1 < self.nbPlayers else j + self.lastTeamPlayed + 1 - self.nbPlayers
+
+            for i in range(self.nbDinos):
+                nextPlayer = i + self.activePlayer if i + self.activePlayer < self.nbDinos else self.activePlayer + i - self.nbDinos
+
+                if(self.players[nextPlayer].team == nextTeam and not self.players[nextPlayer].isDead):
+                    self.activePlayer = nextPlayer
+                    self.lastTeamPlayed = nextTeam
+
+                    if self.lastPlayerTeam1 == nextPlayer or self.lastPlayerTeam2 == nextPlayer  or self.lastPlayerTeam3 == nextPlayer:
+                        potentialPlayerFind = True
+                    else:
+                        playerFind = True
+                        break
+
+            if playerFind or potentialPlayerFind:
+                break
+
+        if nextTeam == 1:
+            self.lastPlayerTeam1 = nextPlayer
+        elif nextTeam == 2:
+            self.lastPlayerTeam2 = nextPlayer
+        else:
+            self.lastPlayerTeam3 = nextPlayer
+
     def endOfTurn(self):
         self.world.generateWind()
         self.timer = 0
@@ -156,10 +188,8 @@ class Game:
             self.players[self.activePlayer].wantsToWalkLeft = False
             self.players[self.activePlayer].wantsToWalkRight = False
             self.players[self.activePlayer].isActivePlayer = False
-            self.activePlayer += 1
-            self.activePlayer = 0 if self.activePlayer >= self.nbDinos else self.activePlayer
+
+            self.findNextPlayer()
 
             current_player = self.players[self.activePlayer]
             current_player.isActivePlayer = True
-
-            self.proj.golfBall.changeOrig((current_player.x, current_player.y - current_player.allRect.h))

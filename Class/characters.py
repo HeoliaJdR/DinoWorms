@@ -55,6 +55,7 @@ class Characters:
         self.size = (100 + constants.MEDIUM_CIRCLE, 63 + constants.MEDIUM_CIRCLE)
 
         self.isActivePlayer = False
+        self.isDead = False
 
         """ Ajout des animations"""
         self.launchAnim = False
@@ -68,6 +69,7 @@ class Characters:
 
         self.font = pygame.font.SysFont("comicsansms", 20)
         self.lookRight = True
+        self.playDeadAnim = False
 
     def drawCharacter(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), self.rect["BotR"])
@@ -157,18 +159,7 @@ class Characters:
         for rect in self.rect.values():
             self.allRect = self.allRect.union(rect)
 
-    def displayCharacter(self, screen, area, world):
-        """if self.isJumping == True:
-            self.time += 0.5
-            pos = self.jumpCharacter()
-            #self.x = pos[0]
-            self.y = pos[1]
-            self.canGoDown = 1
-            if self.time > 3:
-                self.isJumping = False
-                self.time = 0
-                self.displayCharacter(screen, area, world)
-        """
+    def displayCharacter(self, screen):
         pygame.draw.rect(screen, (0, 255, 0), (self.x - 25, self.y - 100, self.hp, 10), 0)
         pygame.draw.rect(screen, (0, 0, 0), (self.x - 25, self.y - 100, 100, 10), 1)
         if self.team == 0:
@@ -184,20 +175,22 @@ class Characters:
         if self.displayBoxes == 1:
             self.drawCharacter(screen)
         if self.animConstant == constants.IDLE:
+            if self.isDead: self.playDeadAnim = False
             endAnim = self.launchAnim = self.animIdle.playAnim(screen, self.origAnim)
             self.firstLoop = 1
         if self.animConstant == constants.WALK:
+            if self.isDead: self.playDeadAnim = False
             endAnim = self.launchAnim = self.animWalk.playAnim(screen, self.origAnim)
             self.firstLoop = 1
         if self.animConstant == constants.DEAD:
             endAnim = self.launchAnim = self.animDead.playAnim(screen, self.origAnim)
+            self.playDeadAnim = endAnim
 
         return endAnim
 
     def moveCharacter(self, world, area):
         if self.wantsToWalkRight:
             if self.direction == 1:
-                self.flipAnim()
                 # self.player = pygame.transform.flip(self.player, True, True)
                 self.isCollided(world, area, "TopR", 4)
                 self.isCollided(world, area, "BotR", 4)
@@ -221,7 +214,6 @@ class Characters:
                 self.collideRect[key] = 0
         if self.wantsToWalkLeft:
             if self.direction == 0:
-                self.flipAnim()
                 self.isCollided(world, area, "TopL", 4)
                 self.isCollided(world, area, "BotL", 4)
                 self.isCollided(world, area, "Tail", 4)
@@ -261,8 +253,6 @@ class Characters:
                 if area[j][i] == 1:
                     self.collideRect[place] = 1
                     if place == "FeetL" or place == "FeetR":
-                        #print("Rect in : " + str(self.rect[place]) + "J = " + str(j) + " ; I = " + str(i))
-                        #print(str(newWorld.screenW) + " " + str(newWorld.screenH))
                         self.canGoDown = 0
                         if self.stillJumping == True:
                             self.stillJumping = False
@@ -284,3 +274,5 @@ class Characters:
 
         if self.hp <= 0:
             self.animConstant = constants.DEAD
+            self.isDead = True
+            self.playDeadAnim = True

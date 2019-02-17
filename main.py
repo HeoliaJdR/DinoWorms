@@ -13,6 +13,7 @@ screenHeight = rootSystem.winfo_screenheight()
 #Start Pygame
 pygame.init()
 pygame.display.init()
+pygame.display.set_caption('DinoWorms : LE jeu de votre vie')
 screen = pygame.display.set_mode((screenWith - 200, screenHeight - 200), pygame.RESIZABLE)
 
 # Init Menu

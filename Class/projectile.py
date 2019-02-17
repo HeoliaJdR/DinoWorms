@@ -143,13 +143,13 @@ class projectile(object):
         if self.drawTrajectories:
             self.trajectory.append((int(self.golfBall.x+self.golfBall.radius/2), int(self.golfBall.y+self.golfBall.radius/2)))
 
-        if self.launchAnim:
-            self.launchAnim = self.anim.playAnim(win, self.origAnim)
-            return self.launchAnim
-
         if self.verifyCollision:
             self.verifyCollision = False
             self.collisionWithPlayer(players)
+
+        if self.launchAnim:
+            self.launchAnim = self.anim.playAnim(win, self.origAnim)
+            return self.launchAnim
 
         if self.shoot:
             for i in range(self.golfBall.x+1,self.golfBall.x + self.golfBall.radius-1):
@@ -285,16 +285,17 @@ class projectile(object):
         rectProj = pygame.Rect(self.golfBall.x, self.golfBall.y, self.golfBall.radius, self.golfBall.radius)
 
         for player in players:
-            if verifyExplosion:
-                if rectProj.colliderect(player.allRect):
-                    isCollision = True
-            else:
-                if (math.pow((player.allRect.x - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2) <  areaCircle or
-                    math.pow((player.allRect.x  - self.origAnim[0]), 2) + math.pow((player.allRect.y + player.allRect.h - self.origAnim[1]), 2) < areaCircle or
-                    math.pow((player.allRect.x + player.allRect.w  - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2) < areaCircle or
-                    math.pow((player.allRect.x + player.allRect.w  - self.origAnim[0]), 2) + math.pow((player.allRect.y + player.allRect.h - self.origAnim[1]), 2) < areaCircle
-                ):
-                    isCollision = True
-                    player.loseHp(50)
+            if not player.isDead:
+                if verifyExplosion:
+                    if rectProj.colliderect(player.allRect):
+                        isCollision = True
+                else:
+                    if (math.pow((player.allRect.x - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2) <  areaCircle or
+                        math.pow((player.allRect.x  - self.origAnim[0]), 2) + math.pow((player.allRect.y + player.allRect.h - self.origAnim[1]), 2) < areaCircle or
+                        math.pow((player.allRect.x + player.allRect.w  - self.origAnim[0]), 2) + math.pow((player.allRect.y - self.origAnim[1]), 2) < areaCircle or
+                        math.pow((player.allRect.x + player.allRect.w  - self.origAnim[0]), 2) + math.pow((player.allRect.y + player.allRect.h - self.origAnim[1]), 2) < areaCircle
+                    ):
+                        isCollision = True
+                        player.loseHp(50)
 
         return isCollision
