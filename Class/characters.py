@@ -56,6 +56,7 @@ class Characters:
 
         self.isActivePlayer = False
         self.isDead = False
+        self.hasFallen = False
 
         """ Ajout des animations"""
         self.launchAnim = False
@@ -175,11 +176,9 @@ class Characters:
         if self.displayBoxes == 1:
             self.drawCharacter(screen)
         if self.animConstant == constants.IDLE:
-            if self.isDead: self.playDeadAnim = False
             endAnim = self.launchAnim = self.animIdle.playAnim(screen, self.origAnim)
             self.firstLoop = 1
         if self.animConstant == constants.WALK:
-            if self.isDead: self.playDeadAnim = False
             endAnim = self.launchAnim = self.animWalk.playAnim(screen, self.origAnim)
             self.firstLoop = 1
         if self.animConstant == constants.DEAD:
@@ -236,15 +235,15 @@ class Characters:
             self.origAnim = (self.x, self.y)
             for key in self.collideRect:
                 if key != "FeetL" or key != "FeetR":
-                    #print(key)
                     self.collideRect[key] = 0
 
     def isCollided(self, newWorld, area, place, rangePrevision):
         for i in range(self.rect[place].y, self.rect[place].y + self.rect[place].height):
             for j in range(self.rect[place].x, self.rect[place].x + self.rect[place].width):
                 if i <= 0 or j <= 0 or i + 15 >= newWorld.screenH - 15 or j + rangePrevision >= newWorld.screenW - 15:
-                    if i + 15 >= newWorld.screenH - 10:
+                    if i + 15 >= newWorld.screenH - 10 and not self.hasFallen:
                         self.loseHp(100)
+                        self.hasFallen = True
                         return
                     self.collideRect[place] = 1
                     if place == "FeetL" or place == "FeetR":

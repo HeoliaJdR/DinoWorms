@@ -55,11 +55,13 @@ class Game:
                 player.updateYPos(self.world, area)
                 player.jumpCharacter(self.world, area)
 
+                if player.isActivePlayer and player.hasFallen:
+                    needDestroy = True
+                    needEndOfTurn = True
+
                 if needDestroy:
                     endOfGame = self.destroyPlayer(player)
 
-            #if player.isActivePlayer and not self.proj.shoot:
-            #    self.proj.golfBall.changeOrig((player.x, player.y - player.allRect.h))
             mousePosX,mousePosY = pygame.mouse.get_pos()
 
             if player.isActivePlayer and not self.proj.shoot and mousePosX > player.x:
@@ -184,7 +186,9 @@ class Game:
         self.timer = 0
 
         if self.players:
-            self.players[self.activePlayer].animConstant = constants.IDLE
+            if self.players[self.activePlayer].hp > 0:
+                self.players[self.activePlayer].animConstant = constants.IDLE
+
             self.players[self.activePlayer].wantsToWalkLeft = False
             self.players[self.activePlayer].wantsToWalkRight = False
             self.players[self.activePlayer].isActivePlayer = False
